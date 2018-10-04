@@ -16,10 +16,14 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'List',
-      url: '/list',
-      icon: 'list'
+      title: 'Wifi Config',
+      url: '/wifi-config',
+      icon: 'wifi'
     }
+    // {
+    //   title: 'Pwd',
+    //   url: ['wifi-config', 'wifi-password']
+    // }
   ];
 
   constructor(

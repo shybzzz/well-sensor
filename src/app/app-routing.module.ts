@@ -12,8 +12,7 @@ const routes: Routes = [
     loadChildren: './home/home.module#HomePageModule'
   },
   {
-    path: 'list',
-    loadChildren: './list/list.module#ListPageModule'
+    path: 'wifi-config', loadChildren: './wifi-config/wifi-config.module#WifiConfigPageModule'
   }
 ];
 
@@ -21,4 +20,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

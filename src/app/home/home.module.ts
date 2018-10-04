@@ -5,7 +5,6 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
-
 @NgModule({
   imports: [
     CommonModule,
@@ -20,4 +19,4 @@ import { HomePage } from './home.page';
   ],
   declarations: [HomePage]
 })
-export class HomePageModule {}
+export class HomePageModule { }

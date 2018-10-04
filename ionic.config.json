@@ -1,5 +1,7 @@
 {
   "name": "well-sensor",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
