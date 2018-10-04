@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { Hotspot, HotspotNetwork } from '@ionic-native/hotspot/ngx';
+import { WifiConfigService } from './wifi-config.service';
 
 @Component({
   selector: 'app-wifi-config',
@@ -11,7 +12,8 @@ export class WifiConfigPage implements OnInit {
   networks: HotspotNetwork[] = [<HotspotNetwork>{ SSID: 'Earth', level: -60 }];
 
 
-  constructor(private platform: Platform, private hotspot: Hotspot) { }
+  constructor(private platform: Platform, private hotspot: Hotspot,
+    private wifiConfig: WifiConfigService) { }
 
   ngOnInit() {
 
@@ -20,9 +22,9 @@ export class WifiConfigPage implements OnInit {
     });
   }
 
-  navigateToSetPassword() {
-    // this.wifiConfig.selectedNetwork$.next(network);
-    // this.router.navigate(['/wifi-password'], { relativeTo: this.activatedRoute });
+  navigateToSetPassword(network: HotspotNetwork) {
+    this.wifiConfig.selectedNetwork$.next(network);
+    console.log('Nav');
   }
 
   scanWifi() {

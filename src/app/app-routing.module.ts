@@ -13,7 +13,8 @@ const routes: Routes = [
   },
   {
     path: 'wifi-config', loadChildren: './wifi-config/wifi-config.module#WifiConfigPageModule'
-  }
+  },
+  { path: 'wifi-password', loadChildren: './wifi-config/wifi-password/wifi-password.module#WifiPasswordPageModule' }
 ];
 
 @NgModule({
