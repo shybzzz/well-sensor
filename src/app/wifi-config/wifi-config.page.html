@@ -8,24 +8,18 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-card>
-    <ion-card-content>
-      <div>
-        Select Wifi for Well Sensor
-      </div>
-      <ion-button icon-start padding (click)="scanWifi()">
-        <ion-icon name="refresh"></ion-icon>
-        Refresh
-      </ion-button>
-
-    </ion-card-content>
-  </ion-card>
-
-
   <ion-list>
+    <ion-list-header>
+      <ion-label>
+        Available Wifi Networks
+      </ion-label>
+      <ion-button item-end icon-start (click)="scanWifi()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+    </ion-list-header>
     <ion-item *ngFor="let network of networks" (click)="navigateToSetPassword(network)" [routerDirection]="'root'"
       [routerLink]="['/wifi-password']">
-      <ion-label padding>
+      <ion-label>
         {{network.SSID}}
       </ion-label>
       <ion-badge item-end>{{network.level}} dBm</ion-badge>
