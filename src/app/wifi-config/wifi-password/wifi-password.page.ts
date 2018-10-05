@@ -1,7 +1,7 @@
 import { ArrayConverter } from './../../helpers/array-converter';
 import { HotspotNetwork } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from './../wifi-config.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs/internal/Subject';
 import { FormControl, Validators, FormBuilder } from '@angular/forms';
@@ -13,7 +13,7 @@ import { TcpSockets } from '../../helpers/tcp-sockets';
   templateUrl: './wifi-password.page.html',
   styleUrls: ['./wifi-password.page.scss']
 })
-export class WifiPasswordPage implements OnInit, OnDestroy {
+export class WifiPasswordPage implements OnInit {
   destroyed$ = new Subject();
   network: HotspotNetwork;
   error;
@@ -22,18 +22,20 @@ export class WifiPasswordPage implements OnInit, OnDestroy {
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
 
   wellSensorWifiFailure = info => {
-    const data = info.data;
-    this.error = {
-      message: `Well Sensor failed to connect Wifi (Error: ${
-        new Uint8Array(data)[0]
-      })`
-    };
+    const data = new Uint8Array(info.data);
+    if (data[0] === 10) {
+      this.error = {
+        message: `Well Sensor failed to connect Wifi`
+      };
+      this.changeDetector.detectChanges();
+    }
   };
 
   constructor(
     public wifiConfig: WifiConfigService,
     private formBuilder: FormBuilder,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private changeDetector: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -42,11 +44,6 @@ export class WifiPasswordPage implements OnInit, OnDestroy {
       .subscribe(n => {
         this.network = n;
       });
-    TcpSockets.addReceiveHandler(this.wellSensorWifiFailure);
-  }
-
-  ngOnDestroy() {
-    TcpSockets.removeReceiveHandler(this.wellSensorWifiFailure).then();
   }
 
   async sendWifiConfig() {
@@ -75,17 +72,21 @@ export class WifiPasswordPage implements OnInit, OnDestroy {
         socketId,
         '192.168.4.1'
       );
+      await TcpSockets.addReceiveHandler(this.wellSensorWifiFailure);
 
       const res = await TcpSockets.send(
         socketId,
         ArrayConverter.str2ArrayBuffer(network.SSID, this.pwdControl.value)
       );
 
-      await TcpSockets.setKeepAlive(socketId);
-
-      await TcpSockets.disconnect(socketId);
-      await TcpSockets.close(socketId);
-      return Promise.resolve(res);
+      return new Promise<any>(resolve => {
+        setTimeout(() => {
+          TcpSockets.removeReceiveHandler(this.wellSensorWifiFailure);
+          TcpSockets.disconnect(socketId);
+          TcpSockets.close(socketId);
+          resolve(res);
+        }, 7000);
+      });
     } catch (err) {
       return Promise.reject(err);
     }

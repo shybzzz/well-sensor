@@ -3,15 +3,16 @@ export const dataSeparator = '\n';
 export function str2ArrayBuffer(...message: string[]): ArrayBuffer {
   const str = message.join(dataSeparator);
   const length = str.length;
-  const buffer = new ArrayBuffer(length + 3);
+  const buffer = new ArrayBuffer(length + 4);
   const packet = new Uint8Array(buffer);
-  packet[0] = 3;
+  packet[0] = 255;
+  packet[1] = 3;
   // tslint:disable-next-line:no-bitwise
-  packet[1] = length << 8;
+  packet[2] = length << 8;
   // tslint:disable-next-line:no-bitwise
-  packet[2] = length & 0xff;
+  packet[3] = length & 0xff;
   for (let lc = 0; lc < length; lc++) {
-    packet[3 + lc] = str.charCodeAt(lc);
+    packet[4 + lc] = str.charCodeAt(lc);
   }
   return buffer;
 }
