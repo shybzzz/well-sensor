@@ -11,12 +11,13 @@ import { WifiConfigService } from './wifi-config.service';
 export class WifiConfigPage implements OnInit {
   networks: HotspotNetwork[] = [<HotspotNetwork>{ SSID: 'Earth', level: -60 }];
 
-
-  constructor(private platform: Platform, private hotspot: Hotspot,
-    private wifiConfig: WifiConfigService) { }
+  constructor(
+    private platform: Platform,
+    private hotspot: Hotspot,
+    private wifiConfig: WifiConfigService
+  ) {}
 
   ngOnInit() {
-
     this.platform.ready().then(() => {
       this.scanWifi();
     });
@@ -24,13 +25,11 @@ export class WifiConfigPage implements OnInit {
 
   navigateToSetPassword(network: HotspotNetwork) {
     this.wifiConfig.selectedNetwork$.next(network);
-    console.log('Nav');
   }
 
   scanWifi() {
     this.hotspot.scanWifi().then((networks: Array<HotspotNetwork>) => {
-      this.networks = networks.sort((n1, n2) => (n2.level - n1.level));
+      this.networks = networks.sort((n1, n2) => n2.level - n1.level);
     });
   }
-
 }
