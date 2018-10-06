@@ -1,12 +1,15 @@
 import { ArrayConverter } from './../../helpers/array-converter';
 import { HotspotNetwork } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from './../wifi-config.service';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs/internal/Subject';
 import { FormControl, Validators, FormBuilder } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { TcpSockets } from '../../helpers/tcp-sockets';
+import { WellSensorConstants } from '../../helpers/well-sensor-constants';
+import { Storage } from '@ionic/storage';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-wifi-password',
@@ -21,13 +24,24 @@ export class WifiPasswordPage implements OnInit {
   pwdControl = new FormControl('rostyk10-10', Validators.required);
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
 
-  wellSensorWifiFailure = info => {
+  receiveDataHandler = info => {
     const data = new Uint8Array(info.data);
-    if (data[0] === 10) {
+    const responseType = data[0];
+    if (responseType === WellSensorConstants.WIFI_ERROR) {
       this.error = {
         message: `Well Sensor failed to connect Wifi`
       };
-      this.changeDetector.detectChanges();
+    }
+    if (responseType === WellSensorConstants.WIFI_CONNECTED) {
+      const ipAdress = ArrayConverter.arrayBuffer2Response(info.data).data;
+      const network = this.network;
+      const ssid = network && network.SSID;
+      Promise.all([
+        this.storage.set('wellSensorSSID', ssid),
+        this.storage.set('wellSensorIpAdress', ipAdress)
+      ]).then(() => {
+        this.router.navigate(['/home']);
+      });
     }
   };
 
@@ -35,7 +49,8 @@ export class WifiPasswordPage implements OnInit {
     public wifiConfig: WifiConfigService,
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingController,
-    private changeDetector: ChangeDetectorRef
+    private storage: Storage,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -72,7 +87,7 @@ export class WifiPasswordPage implements OnInit {
         socketId,
         '192.168.4.1'
       );
-      await TcpSockets.addReceiveHandler(this.wellSensorWifiFailure);
+      await TcpSockets.addReceiveHandler(this.receiveDataHandler);
 
       const res = await TcpSockets.send(
         socketId,
@@ -81,7 +96,7 @@ export class WifiPasswordPage implements OnInit {
 
       return new Promise<any>(resolve => {
         setTimeout(() => {
-          TcpSockets.removeReceiveHandler(this.wellSensorWifiFailure);
+          TcpSockets.removeReceiveHandler(this.receiveDataHandler);
           TcpSockets.disconnect(socketId);
           TcpSockets.close(socketId);
           resolve(res);

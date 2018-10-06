@@ -10,5 +10,21 @@
 </ion-header>
 
 <ion-content padding>
-  Well Sensor
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        <ion-icon name="wifi"></ion-icon>
+        Wifi Configuration
+      </ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>IP Adress</ion-label>
+      <ion-label>{{wellSensorIpAdress}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>SSID</ion-label>
+      <ion-label>{{wellSensorSSID}}</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>

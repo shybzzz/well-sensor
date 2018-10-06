@@ -17,13 +17,16 @@ export function str2ArrayBuffer(...message: string[]): ArrayBuffer {
   return buffer;
 }
 
-export function arrayBuffer2Str(buffer: ArrayBuffer): string[] {
-  let str = '';
+export function arrayBuffer2Response(
+  buffer: ArrayBuffer
+): { responseType: number; data: string } {
+  let data = '';
   const ui8 = new Uint8Array(buffer);
-  for (let i = 0; i < ui8.length; i++) {
-    str = str + String.fromCharCode(ui8[i]);
+  const responseType = ui8[0];
+  for (let i = 1; i < ui8.length; i++) {
+    data = data + String.fromCharCode(ui8[i]);
   }
-  return str.split(dataSeparator);
+  return { responseType, data };
 }
 
-export const ArrayConverter = { str2ArrayBuffer, arrayBuffer2Str };
+export const ArrayConverter = { str2ArrayBuffer, arrayBuffer2Response };
