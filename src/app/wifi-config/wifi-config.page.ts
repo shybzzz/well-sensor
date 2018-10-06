@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Platform, LoadingController } from '@ionic/angular';
 import { Hotspot, HotspotNetwork } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from './wifi-config.service';
 
@@ -14,7 +14,8 @@ export class WifiConfigPage implements OnInit {
   constructor(
     private platform: Platform,
     private hotspot: Hotspot,
-    private wifiConfig: WifiConfigService
+    private wifiConfig: WifiConfigService,
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
@@ -27,9 +28,14 @@ export class WifiConfigPage implements OnInit {
     this.wifiConfig.selectedNetwork$.next(network);
   }
 
-  scanWifi() {
-    this.hotspot.scanWifi().then((networks: Array<HotspotNetwork>) => {
-      this.networks = networks.sort((n1, n2) => n2.level - n1.level);
+  async scanWifi() {
+    const loader = await this.loadingCtrl.create({
+      message: 'Scanning Wifi....'
     });
+    await loader.present();
+    this.networks = (await this.hotspot.scanWifi()).sort(
+      (n1, n2) => n2.level - n1.level
+    );
+    await loader.dismiss();
   }
 }
