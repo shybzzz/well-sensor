@@ -6,7 +6,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { WifiConfigPage } from './wifi-config.page';
-import { Hotspot } from '@ionic-native/hotspot/ngx';
 
 const routes: Routes = [
   {
@@ -22,7 +21,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [WifiConfigPage],
-  providers: [Hotspot]
+  declarations: [WifiConfigPage]
 })
-export class WifiConfigPageModule { }
+export class WifiConfigPageModule {}

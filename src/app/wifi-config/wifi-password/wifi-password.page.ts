@@ -1,5 +1,5 @@
 import { ArrayConverter } from './../../helpers/array-converter';
-import { HotspotNetwork } from '@ionic-native/hotspot/ngx';
+import { HotspotNetwork, Hotspot } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from './../wifi-config.service';
 import { Component, OnInit } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
@@ -20,6 +20,7 @@ export class WifiPasswordPage implements OnInit {
   destroyed$ = new Subject();
   network: HotspotNetwork;
   error;
+  success;
 
   pwdControl = new FormControl('rostyk10-10', Validators.required);
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
@@ -33,15 +34,14 @@ export class WifiPasswordPage implements OnInit {
       };
     }
     if (responseType === WellSensorConstants.WIFI_CONNECTED) {
-      const ipAdress = ArrayConverter.arrayBuffer2Response(info.data).data;
-      const network = this.network;
-      const ssid = network && network.SSID;
-      Promise.all([
-        this.storage.set('wellSensorSSID', ssid),
-        this.storage.set('wellSensorIpAdress', ipAdress)
-      ]).then(() => {
-        this.router.navigate(['/home']);
-      });
+      const ipAddress = ArrayConverter.arrayBuffer2Response(info.data).data;
+      this.wifiConnected(ipAddress)
+        .then(() => {
+          this.router.navigate(['/home']);
+        })
+        .catch(err => {
+          this.error = err;
+        });
     }
   };
 
@@ -50,7 +50,8 @@ export class WifiPasswordPage implements OnInit {
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingController,
     private storage: Storage,
-    private router: Router
+    private router: Router,
+    private hotspot: Hotspot
   ) {}
 
   ngOnInit() {
@@ -73,6 +74,20 @@ export class WifiPasswordPage implements OnInit {
       this.error = err;
     }
     await loader.dismiss();
+  }
+
+  private async wifiConnected(ipAddress: string) {
+    const network = this.network;
+    const ssid = network && network.SSID;
+    const storage = this.storage;
+    try {
+      await storage.set('wellSensorSSID', ssid);
+      await storage.set('wellSensorIpAdress', ipAddress);
+      await this.hotspot.connectToWifi(ssid, this.pwdControl.value);
+      return Promise.resolve();
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
 
   private async sendNetworkData(): Promise<any> {
