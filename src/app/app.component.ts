@@ -6,7 +6,8 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html'
+  templateUrl: 'app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   public appPages = [
@@ -16,14 +17,10 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'Wifi Config',
-      url: '/wifi-config',
-      icon: 'wifi'
+      title: 'Add Device',
+      url: '/add-device',
+      icon: 'add'
     }
-    // {
-    //   title: 'Pwd',
-    //   url: ['wifi-config', 'wifi-password']
-    // }
   ];
 
   constructor(

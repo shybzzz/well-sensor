@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Add Device</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        Access Point Configuration
+      </ion-label>
+    </ion-list-header>
+    <ion-item *ngIf="success" color="secondary">
+      {{success | json}}
+    </ion-item>
+    <ion-item *ngIf="error" color="danger">
+      Oop... {{error.message | json}}
+    </ion-item>
+  </ion-list>
+  <ion-button (click)="scanQr()" icon-start block>
+    <ion-icon name="qr-scanner"></ion-icon>
+    Scan Qr
+  </ion-button>
+
+</ion-content>

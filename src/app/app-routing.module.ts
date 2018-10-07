@@ -14,7 +14,9 @@ const routes: Routes = [
   {
     path: 'wifi-config', loadChildren: './wifi-config/wifi-config.module#WifiConfigPageModule'
   },
-  { path: 'wifi-password', loadChildren: './wifi-config/wifi-password/wifi-password.module#WifiPasswordPageModule' }
+  { path: 'wifi-password', loadChildren: './wifi-config/wifi-password/wifi-password.module#WifiPasswordPageModule' },
+  { path: 'add-device', loadChildren: './add-device/add-device.module#AddDevicePageModule' },
+  { path: 'scan-qr', loadChildren: './scan-qr/scan-qr.module#ScanQrPageModule' }
 ];
 
 @NgModule({
