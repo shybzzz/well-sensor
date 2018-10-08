@@ -1,6 +1,7 @@
+import { DeviceStorageService } from './../services/device-storage.service';
 import { Component, OnInit } from '@angular/core';
-import { Storage } from '@ionic/storage';
 import { Platform, LoadingController } from '@ionic/angular';
+import { Device } from '../model/device';
 
 @Component({
   selector: 'app-home',
@@ -8,29 +9,43 @@ import { Platform, LoadingController } from '@ionic/angular';
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-  wellSensorIpAdress: string;
-  wellSensorSSID: string;
+  devices: Device[];
+  success;
+  error;
 
   constructor(
     private platform: Platform,
-    private storage: Storage,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private deviceStorage: DeviceStorageService
   ) {}
 
   ngOnInit(): void {
     this.platform.ready().then(() => {
-      this.loadConfig();
+      this.loadDevices();
     });
   }
 
-  private async loadConfig() {
+  async removeDevice(id) {
+    try {
+      const loader = await this.loadingCtrl.create({
+        message: `Removing Device ${id}....`
+      });
+      await loader.present();
+      await this.deviceStorage.removeDevice(id);
+      this.devices = await this.deviceStorage.getDevices();
+      await loader.dismiss();
+      return Promise.resolve();
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  private async loadDevices() {
     const loader = await this.loadingCtrl.create({
       message: 'Loading Config....'
     });
     await loader.present();
-    const storage = this.storage;
-    this.wellSensorIpAdress = await storage.get('wellSensorIpAdress');
-    this.wellSensorSSID = await storage.get('wellSensorSSID');
+    this.devices = await this.deviceStorage.getDevices();
     await loader.dismiss();
   }
 }

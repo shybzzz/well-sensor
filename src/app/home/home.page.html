@@ -14,17 +14,23 @@
     <ion-list-header>
       <ion-label>
         <ion-icon name="wifi"></ion-icon>
-        Wifi Configuration
+        Devices
       </ion-label>
     </ion-list-header>
 
-    <ion-item>
-      <ion-label>IP Adress</ion-label>
-      <ion-label>{{wellSensorIpAdress}}</ion-label>
+    <ion-item *ngIf="success" color="secondary">
+      {{success | json}}
     </ion-item>
-    <ion-item>
-      <ion-label>SSID</ion-label>
-      <ion-label>{{wellSensorSSID}}</ion-label>
+    <ion-item *ngIf="error" color="danger">
+      Oops... {{error.message | json}}
+    </ion-item>
+
+    <ion-item *ngFor="let device of devices">
+      <ion-label>{{device.ssid}}</ion-label>
+      <ion-label>{{device.ipAddress}}</ion-label>
+      <ion-button (click)=removeDevice(device.id) color="danger" outline>
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
     </ion-item>
   </ion-list>
 </ion-content>

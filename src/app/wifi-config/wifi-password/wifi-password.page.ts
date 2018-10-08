@@ -8,8 +8,8 @@ import { FormControl, Validators, FormBuilder } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { TcpSockets } from '../../helpers/tcp-sockets';
 import { WellSensorConstants } from '../../helpers/well-sensor-constants';
-import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
+import { DeviceStorageService } from '../../services/device-storage.service';
 
 @Component({
   selector: 'app-wifi-password',
@@ -34,7 +34,9 @@ export class WifiPasswordPage implements OnInit {
       };
     }
     if (responseType === WellSensorConstants.WIFI_CONNECTED) {
-      const ipAddress = ArrayConverter.arrayBuffer2Response(info.data).data;
+      const response = ArrayConverter.arrayBuffer2Response(info.data);
+      const ipAddress = response.data;
+      // this.success = data;
       this.wifiConnected(ipAddress)
         .then(() => {
           this.router.navigate(['/home']);
@@ -49,9 +51,9 @@ export class WifiPasswordPage implements OnInit {
     public wifiConfig: WifiConfigService,
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingController,
-    private storage: Storage,
     private router: Router,
-    private hotspot: Hotspot
+    private hotspot: Hotspot,
+    private deviceStorage: DeviceStorageService
   ) {}
 
   ngOnInit() {
@@ -79,10 +81,8 @@ export class WifiPasswordPage implements OnInit {
   private async wifiConnected(ipAddress: string) {
     const network = this.network;
     const ssid = network && network.SSID;
-    const storage = this.storage;
     try {
-      await storage.set('wellSensorSSID', ssid);
-      await storage.set('wellSensorIpAdress', ipAddress);
+      await this.deviceStorage.addDevice(ssid, ipAddress);
       await this.hotspot.connectToWifi(ssid, this.pwdControl.value);
       return Promise.resolve();
     } catch (err) {
