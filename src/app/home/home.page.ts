@@ -1,51 +1,62 @@
-import { DeviceStorageService } from './../services/device-storage.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, LoadingController } from '@ionic/angular';
 import { Device } from '../model/device';
+import { DeviceService } from '../device/device.service';
+import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss']
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   devices: Device[];
   success;
   error;
+  destroy$ = new Subject();
 
   constructor(
     private platform: Platform,
     private loadingCtrl: LoadingController,
-    private deviceStorage: DeviceStorageService
+    private device: DeviceService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.platform.ready().then(() => {
-      this.loadDevices();
+      this.device.devices$.pipe(takeUntil(this.destroy$)).subscribe(devices => {
+        this.devices = devices;
+      });
+      this.loadDevices().catch(err => {
+        this.error = { message: err };
+      });
     });
   }
 
-  async removeDevice(id) {
-    try {
-      const loader = await this.loadingCtrl.create({
-        message: `Removing Device ${id}....`
-      });
-      await loader.present();
-      await this.deviceStorage.removeDevice(id);
-      this.devices = await this.deviceStorage.getDevices();
-      await loader.dismiss();
-      return Promise.resolve();
-    } catch (err) {
-      return Promise.reject(err);
-    }
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
-  private async loadDevices() {
+  openDevicePage(deviceId: string) {
+    this.device.deviceId$.next(deviceId);
+    this.router.navigate(['/device']);
+  }
+
+  private async loadDevices(): Promise<void> {
     const loader = await this.loadingCtrl.create({
-      message: 'Loading Config....'
+      message: 'Loading Devices....'
     });
     await loader.present();
-    this.devices = await this.deviceStorage.getDevices();
+    let res: Promise<void>;
+    try {
+      await this.device.resetDevices();
+      res = Promise.resolve();
+    } catch (err) {
+      res = Promise.reject(err);
+    }
     await loader.dismiss();
+    return res;
   }
 }

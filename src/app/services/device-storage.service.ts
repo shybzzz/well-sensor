@@ -43,4 +43,13 @@ export class DeviceStorageService {
       return Promise.reject(err);
     }
   }
+
+  async getDevice(id: string): Promise<Device> {
+    try {
+      const devices = await this.getDevices();
+      return Promise.resolve(devices.find(d => d.id === id));
+    } catch (err) {
+      Promise.reject(err);
+    }
+  }
 }

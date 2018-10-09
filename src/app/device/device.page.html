@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Device</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-item *ngIf="success" color="secondary">
+      {{success | json}}
+    </ion-item>
+    <ion-item *ngIf="error" color="danger">
+      Oops... {{error.message | json}}
+    </ion-item>
+    <ion-item>
+      <ion-button (click)="removeDevice(currentDevice.id)" color="danger" outline>
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-list-header>
+      <ion-label>
+        <ion-icon name="wifi"></ion-icon>
+        Wifi Settings
+      </ion-label>
+    </ion-list-header>
+
+
+    <ng-container *ngIf="currentDevice">
+      <ion-item>
+        <ion-label>SSID</ion-label>
+        <ion-label>{{currentDevice.ssid}}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label>IP Adress</ion-label>
+        <ion-label>{{currentDevice.ipAddress}}</ion-label>
+      </ion-item>
+    </ng-container>
+
+    <ion-list-header>
+      <ion-label>
+        <ion-icon name="wifi"></ion-icon>
+        MQTT
+      </ion-label>
+    </ion-list-header>
+
+
+  </ion-list>
+</ion-content>

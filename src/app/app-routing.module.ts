@@ -12,15 +12,30 @@ const routes: Routes = [
     loadChildren: './home/home.module#HomePageModule'
   },
   {
-    path: 'wifi-config', loadChildren: './wifi-config/wifi-config.module#WifiConfigPageModule'
+    path: 'wifi-config',
+    loadChildren: './wifi-config/wifi-config.module#WifiConfigPageModule'
   },
-  { path: 'wifi-password', loadChildren: './wifi-config/wifi-password/wifi-password.module#WifiPasswordPageModule' },
-  { path: 'add-device', loadChildren: './add-device/add-device.module#AddDevicePageModule' },
-  { path: 'scan-qr', loadChildren: './scan-qr/scan-qr.module#ScanQrPageModule' }
+  {
+    path: 'wifi-password',
+    loadChildren:
+      './wifi-config/wifi-password/wifi-password.module#WifiPasswordPageModule'
+  },
+  {
+    path: 'add-device',
+    loadChildren: './add-device/add-device.module#AddDevicePageModule'
+  },
+  {
+    path: 'scan-qr',
+    loadChildren: './scan-qr/scan-qr.module#ScanQrPageModule'
+  },
+  {
+    path: 'device',
+    loadChildren: './device/device.module#DevicePageModule'
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

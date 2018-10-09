@@ -11,6 +11,12 @@
 
 <ion-content padding>
   <ion-list>
+    <ion-item *ngIf="success" color="secondary">
+      {{success | json}}
+    </ion-item>
+    <ion-item *ngIf="error" color="danger">
+      Oops... {{error.message | json}}
+    </ion-item>
     <ion-list-header>
       <ion-label>
         <ion-icon name="wifi"></ion-icon>
@@ -18,19 +24,9 @@
       </ion-label>
     </ion-list-header>
 
-    <ion-item *ngIf="success" color="secondary">
-      {{success | json}}
-    </ion-item>
-    <ion-item *ngIf="error" color="danger">
-      Oops... {{error.message | json}}
-    </ion-item>
-
-    <ion-item *ngFor="let device of devices">
-      <ion-label>{{device.ssid}}</ion-label>
-      <ion-label>{{device.ipAddress}}</ion-label>
-      <ion-button (click)=removeDevice(device.id) color="danger" outline>
-        <ion-icon name="trash"></ion-icon>
-      </ion-button>
+    <ion-item *ngFor="let d of devices" (click)="openDevicePage(d.id)">
+      <ion-label>{{d.ssid}}</ion-label>
+      <ion-label>{{d.ipAddress}}</ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
