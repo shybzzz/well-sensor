@@ -7,7 +7,11 @@ import { Subject } from 'rxjs/internal/Subject';
 import { FormControl, Validators, FormBuilder } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { TcpSockets } from '../../helpers/tcp-sockets';
-import { WellSensorConstants } from '../../helpers/well-sensor-constants';
+import {
+  SUCCESS_RESPONSE_HEADER,
+  INVALID_WIFI_CONFIG_RESPONSE_HEADER,
+  WIFI_CONNECTION_FAILED_RESPONSE_HEADER
+} from '../../definitions';
 import { Router } from '@angular/router';
 import { DeviceStorageService } from '../../services/device-storage.service';
 
@@ -26,24 +30,26 @@ export class WifiPasswordPage implements OnInit {
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
 
   receiveDataHandler = info => {
-    const data = new Uint8Array(info.data);
-    const responseType = data[0];
-    if (responseType === WellSensorConstants.WIFI_ERROR) {
-      this.error = {
-        message: `Well Sensor failed to connect Wifi`
-      };
-    }
-    if (responseType === WellSensorConstants.WIFI_CONNECTED) {
-      const response = ArrayConverter.arrayBuffer2Response(info.data);
+    const response = ArrayConverter.arrayBuffer2Response(info.data);
+    this.success = response;
+    const responseResult = response.responseResult;
+    if (responseResult === SUCCESS_RESPONSE_HEADER) {
       const ipAddress = response.data;
-      // this.success = data;
       this.wifiConnected(ipAddress)
         .then(() => {
-          this.router.navigate(['/home']);
+          // this.router.navigate(['/home']);
         })
         .catch(err => {
           this.error = err;
         });
+    } else if (responseResult === INVALID_WIFI_CONFIG_RESPONSE_HEADER) {
+      this.error = {
+        message: `Error. Invalid wifiConfig is received`
+      };
+    } else if (responseResult === WIFI_CONNECTION_FAILED_RESPONSE_HEADER) {
+      this.error = {
+        message: `Error. Could not connect to wifi with wifiConfig provided`
+      };
     }
   };
 
@@ -51,7 +57,6 @@ export class WifiPasswordPage implements OnInit {
     public wifiConfig: WifiConfigService,
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingController,
-    private router: Router,
     private hotspot: Hotspot,
     private deviceStorage: DeviceStorageService
   ) {}
@@ -110,6 +115,7 @@ export class WifiPasswordPage implements OnInit {
       );
 
       return new Promise<any>(resolve => {
+        this.success = 'Data sent';
         setTimeout(() => {
           TcpSockets.removeReceiveHandler(this.receiveDataHandler);
           TcpSockets.disconnect(socketId);
