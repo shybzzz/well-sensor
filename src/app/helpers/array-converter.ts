@@ -1,4 +1,4 @@
-import { SUCCESS_RESPONSE_HEADER } from '../definitions';
+import { SUCCESS_RESPONSE_RESULT } from '../definitions';
 
 export const dataSeparator = '\n';
 
@@ -16,18 +16,18 @@ export function str2ArrayBuffer(...message: string[]): ArrayBuffer {
 
 export function arrayBuffer2Response(
   buffer: ArrayBuffer
-): { responseResult: number; data: string; responseType: number } {
+): { responseResult: number; data: any; responseType: number } {
   let data = '';
-  const uint8 = new Uint8Array(buffer);
-  const responseResult = uint8[0];
+  const ar = new Uint8Array(buffer);
+  const responseResult = ar[0];
   let responseType;
-  if (responseResult === SUCCESS_RESPONSE_HEADER) {
-    responseType = uint8[1];
-    for (let i = 1; i < uint8.length; i++) {
-      data = data + String.fromCharCode(uint8[i]);
-    }
+  // if (responseResult === SUCCESS_RESPONSE_HEADER) {
+  responseType = ar[1];
+  for (let i = 2; i < ar.length; i++) {
+    data = data + String.fromCharCode(ar[i]);
   }
-  return { responseResult, data, responseType };
+  // }
+  return { responseResult, data: { data, ar }, responseType };
 }
 
 export const ArrayConverter = { str2ArrayBuffer, arrayBuffer2Response };

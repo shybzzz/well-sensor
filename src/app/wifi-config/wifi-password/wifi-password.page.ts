@@ -1,3 +1,4 @@
+import { SUCCESS_RESPONSE_RESULT } from './../../definitions';
 import { ArrayConverter } from './../../helpers/array-converter';
 import { HotspotNetwork, Hotspot } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from './../wifi-config.service';
@@ -8,7 +9,6 @@ import { FormControl, Validators, FormBuilder } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { TcpSockets } from '../../helpers/tcp-sockets';
 import {
-  SUCCESS_RESPONSE_HEADER,
   INVALID_WIFI_CONFIG_RESPONSE_HEADER,
   WIFI_CONNECTION_FAILED_RESPONSE_HEADER
 } from '../../definitions';
@@ -33,7 +33,7 @@ export class WifiPasswordPage implements OnInit {
     const response = ArrayConverter.arrayBuffer2Response(info.data);
     this.success = response;
     const responseResult = response.responseResult;
-    if (responseResult === SUCCESS_RESPONSE_HEADER) {
+    if (responseResult === SUCCESS_RESPONSE_RESULT) {
       const ipAddress = response.data;
       this.wifiConnected(ipAddress)
         .then(() => {
