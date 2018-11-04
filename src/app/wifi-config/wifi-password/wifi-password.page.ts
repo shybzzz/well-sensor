@@ -37,7 +37,7 @@ export class WifiPasswordPage implements OnInit {
 
   receiveDataHandler = info => {
     const response = arrayBuffer2Response(info.data);
-    this.success = response;
+    this.success = response.data;
     const responseResult = response.responseResult;
     if (responseResult === SUCCESS_RESPONSE_RESULT) {
       const ipAddress = response.data;
@@ -74,6 +74,11 @@ export class WifiPasswordPage implements OnInit {
       .subscribe(n => {
         this.network = n;
       });
+    this.wifiConfig.selectedNetwork$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(n => {
+        this.network = n;
+      });
   }
 
   async sendWifiConfig() {
@@ -94,7 +99,7 @@ export class WifiPasswordPage implements OnInit {
     const network = this.network;
     const ssid = network && network.SSID;
     try {
-      await this.deviceStorage.addDevice(ssid, ipAddress);
+      await this.deviceStorage.addDevice('Rostyk', ssid, ipAddress);
       await this.hotspot.connectToWifi(ssid, this.pwdControl.value);
       return Promise.resolve();
     } catch (err) {

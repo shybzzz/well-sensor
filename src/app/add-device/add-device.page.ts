@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Platform, LoadingController } from '@ionic/angular';
 import { Subject } from 'rxjs';
-import { QrService } from '../scan-qr/qr.service';
+import { QrService } from '../services/qr.service';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -29,14 +29,14 @@ export class AddDevicePage implements OnInit, OnDestroy {
     this.platform.ready().then(() => {
       const qr = this.qr;
       const destroy$ = this.destroy$;
-      qr.data$.pipe(takeUntil(destroy$)).subscribe(({ ssid, password }) => {
+      qr.data$.pipe(takeUntil(destroy$)).subscribe(({ ssid, pwd }) => {
         this.hasData = true;
-        this.connectHotSpot(ssid, password)
+        this.connectHotSpot(ssid, pwd)
           .then(() => {
             this.wifiConfig.accessPointSsid$.next(ssid);
             this.hasData = false;
             this.router.navigate(['./wifi-config']);
-          })
+        })
           .catch(() => {
             this.error = {
               message:

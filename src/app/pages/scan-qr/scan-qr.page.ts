@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Location } from '@angular/common';
 import { Platform } from '@ionic/angular';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
-import { QrService } from './qr.service';
+import { QrService } from '../../services/qr.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-scan-qr',
@@ -14,7 +14,7 @@ export class ScanQrPage implements OnInit, OnDestroy {
     private platform: Platform,
     private qrScanner: QRScanner,
     private qr: QrService,
-    private location: Location
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -24,7 +24,7 @@ export class ScanQrPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // this.qrScanner.destroy();
+    this.qrScanner.destroy();
   }
 
   async scanQr() {
@@ -38,7 +38,6 @@ export class ScanQrPage implements OnInit, OnDestroy {
               qr.data$.next(JSON.parse(text));
               this.qrScanner.hide(); // hide camera preview
               scanSub.unsubscribe(); // stop scanning
-              this.location.back();
             } catch (err) {
               this.handleError('QR is not valid');
             }
@@ -58,6 +57,6 @@ export class ScanQrPage implements OnInit, OnDestroy {
 
   private handleError(message: any) {
     this.qr.error$.next({ message: message });
-    this.location.back();
+    this.router.navigate(['/add-device']);
   }
 }

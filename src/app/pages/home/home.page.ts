@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, LoadingController } from '@ionic/angular';
-import { Device } from '../model/device';
-import { DeviceService } from '../device/device.service';
+import { Device } from '../../model/device';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { DeviceService } from '../../services/device.service';
 
 @Component({
   selector: 'app-home',

@@ -18,8 +18,8 @@ export class AppComponent {
     },
     {
       title: 'Add Device',
-      url: '/add-device',
-      icon: 'add'
+      url: '/scan-qr',
+      icon: 'qr-scanner'
     }
   ];
 

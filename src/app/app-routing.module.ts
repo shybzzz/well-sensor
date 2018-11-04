@@ -9,7 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: './home/home.module#HomePageModule'
+    loadChildren: './pages/home/home.module#HomePageModule'
   },
   {
     path: 'wifi-config',
@@ -26,11 +26,11 @@ const routes: Routes = [
   },
   {
     path: 'scan-qr',
-    loadChildren: './scan-qr/scan-qr.module#ScanQrPageModule'
+    loadChildren: './pages/scan-qr/scan-qr.module#ScanQrPageModule'
   },
   {
     path: 'device',
-    loadChildren: './device/device.module#DevicePageModule'
+    loadChildren: './pages//device/device.module#DevicePageModule'
   }
 ];
 

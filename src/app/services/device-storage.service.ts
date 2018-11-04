@@ -9,15 +9,25 @@ import { generateId, deviceList } from '../helpers/device-storage';
 export class DeviceStorageService {
   constructor(private storage: Storage) {}
 
-  async addDevice(ssid: string, ipAddress: string): Promise<Device> {
+  async addDevice(
+    id: string,
+    ssid: string,
+    ipAddress: string
+  ): Promise<Device> {
     try {
-      const id = generateId();
-      const device = { ssid, ipAddress, id };
       const storage = this.storage;
-      await storage.set(deviceList, [
-        device,
-        ...((await this.getDevices()) || [])
-      ]);
+      let devices = await this.getDevices();
+      const deviceIndex = devices.findIndex(d => d.id === id);
+      let device: Device;
+      if (deviceIndex === -1) {
+        device = { id, ssid, ipAddress };
+        devices = [device, ...devices];
+      } else {
+        device = devices[deviceIndex];
+        device.ssid = ssid;
+        device.ipAddress = ipAddress;
+      }
+      await storage.set(deviceList, devices);
 
       return Promise.resolve(device);
     } catch (err) {

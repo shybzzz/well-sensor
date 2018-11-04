@@ -1,7 +1,7 @@
-import { Device } from './../model/device';
+import { Device } from '../model/device';
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { DeviceStorageService } from '../services/device-storage.service';
+import { DeviceStorageService } from './device-storage.service';
 
 @Injectable({
   providedIn: 'root'
