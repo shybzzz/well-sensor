@@ -1,5 +1,7 @@
-import { SUCCESS_RESPONSE_RESULT } from './../../definitions';
-import { ArrayConverter } from './../../helpers/array-converter';
+import {
+  SUCCESS_RESPONSE_RESULT,
+  WIFI_CONFIG_REQUEST_HEADER
+} from './../../definitions';
 import { HotspotNetwork, Hotspot } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from './../wifi-config.service';
 import { Component, OnInit } from '@angular/core';
@@ -14,6 +16,10 @@ import {
 } from '../../definitions';
 import { Router } from '@angular/router';
 import { DeviceStorageService } from '../../services/device-storage.service';
+import {
+  arrayBuffer2Response,
+  str2ArrayBuffer
+} from '../../helpers/array-converter';
 
 @Component({
   selector: 'app-wifi-password',
@@ -30,7 +36,7 @@ export class WifiPasswordPage implements OnInit {
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
 
   receiveDataHandler = info => {
-    const response = ArrayConverter.arrayBuffer2Response(info.data);
+    const response = arrayBuffer2Response(info.data);
     this.success = response;
     const responseResult = response.responseResult;
     if (responseResult === SUCCESS_RESPONSE_RESULT) {
@@ -51,6 +57,7 @@ export class WifiPasswordPage implements OnInit {
         message: `Error. Could not connect to wifi with wifiConfig provided`
       };
     }
+    // tslint:disable-next-line:semicolon
   };
 
   constructor(
@@ -111,7 +118,11 @@ export class WifiPasswordPage implements OnInit {
 
       const res = await TcpSockets.send(
         socketId,
-        ArrayConverter.str2ArrayBuffer(network.SSID, this.pwdControl.value)
+        str2ArrayBuffer(
+          WIFI_CONFIG_REQUEST_HEADER,
+          network.SSID,
+          this.pwdControl.value
+        )
       );
 
       return new Promise<any>(resolve => {
@@ -121,7 +132,7 @@ export class WifiPasswordPage implements OnInit {
           TcpSockets.disconnect(socketId);
           TcpSockets.close(socketId);
           resolve(res);
-        }, 7000);
+        }, 5000);
       });
     } catch (err) {
       return Promise.reject(err);
