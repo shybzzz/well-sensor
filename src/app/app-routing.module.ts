@@ -13,16 +13,16 @@ const routes: Routes = [
   },
   {
     path: 'wifi-config',
-    loadChildren: './wifi-config/wifi-config.module#WifiConfigPageModule'
+    loadChildren: './pages/wifi-config/wifi-config.module#WifiConfigPageModule'
   },
   {
     path: 'wifi-password',
     loadChildren:
-      './wifi-config/wifi-password/wifi-password.module#WifiPasswordPageModule'
+      './pages/wifi-password/wifi-password.module#WifiPasswordPageModule'
   },
   {
     path: 'add-device',
-    loadChildren: './add-device/add-device.module#AddDevicePageModule'
+    loadChildren: './pages/add-device/add-device.module#AddDevicePageModule'
   },
   {
     path: 'scan-qr',

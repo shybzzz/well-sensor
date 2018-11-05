@@ -1,9 +1,9 @@
 import {
   SUCCESS_RESPONSE_RESULT,
   WIFI_CONFIG_REQUEST_HEADER
-} from './../../definitions';
+} from '../../definitions';
 import { HotspotNetwork, Hotspot } from '@ionic-native/hotspot/ngx';
-import { WifiConfigService } from './../wifi-config.service';
+import { WifiConfigService } from '../wifi-config/wifi-config.service';
 import { Component, OnInit } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs/internal/Subject';
@@ -43,7 +43,7 @@ export class WifiPasswordPage implements OnInit {
       const ipAddress = response.data;
       this.wifiConnected(ipAddress)
         .then(() => {
-          // this.router.navigate(['/home']);
+          this.router.navigate(['/home']);
         })
         .catch(err => {
           this.error = err;
@@ -65,7 +65,8 @@ export class WifiPasswordPage implements OnInit {
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingController,
     private hotspot: Hotspot,
-    private deviceStorage: DeviceStorageService
+    private deviceStorage: DeviceStorageService,
+    private router: Router
   ) {}
 
   ngOnInit() {

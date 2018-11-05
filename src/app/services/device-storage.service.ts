@@ -17,7 +17,7 @@ export class DeviceStorageService {
     try {
       const storage = this.storage;
       let devices = await this.getDevices();
-      const deviceIndex = devices.findIndex(d => d.id === id);
+      const deviceIndex = devices ? devices.findIndex(d => d.id === id) : -1;
       let device: Device;
       if (deviceIndex === -1) {
         device = { id, ssid, ipAddress };
@@ -42,7 +42,9 @@ export class DeviceStorageService {
   async removeDevice(id: string): Promise<void> {
     try {
       const devices = await this.getDevices();
-      const removeIndex = devices.findIndex(device => device.id === id);
+      const removeIndex = devices
+        ? devices.findIndex(device => device.id === id)
+        : -1;
       if (removeIndex > -1) {
         devices.splice(removeIndex, 1);
         return this.storage.set(deviceList, devices);
