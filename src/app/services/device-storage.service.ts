@@ -30,8 +30,8 @@ export class DeviceStorageService {
       await storage.set(deviceList, devices);
 
       return Promise.resolve(device);
-    } catch (err) {
-      return Promise.reject(err);
+    } catch (er) {
+      return Promise.reject(er);
     }
   }
 

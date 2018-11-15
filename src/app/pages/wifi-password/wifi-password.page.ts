@@ -1,6 +1,7 @@
+import { LoggerService } from './../../services/logger.service';
 import {
-  SUCCESS_RESPONSE_RESULT,
-  WIFI_CONFIG_REQUEST_HEADER
+  SET_WIFI_CONFIG_REQUEST_HEADER,
+  errorMessages
 } from '../../definitions';
 import { HotspotNetwork, Hotspot } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from '../wifi-config/wifi-config.service';
@@ -20,17 +21,17 @@ import {
   arrayBuffer2Response,
   str2ArrayBuffer
 } from '../../helpers/array-converter';
+import { promise } from 'protractor';
 
 @Component({
   selector: 'app-wifi-password',
   templateUrl: './wifi-password.page.html',
-  styleUrls: ['./wifi-password.page.scss']
+  styleUrls: ['./wifi-password.page.scss'],
+  providers: [LoggerService]
 })
 export class WifiPasswordPage implements OnInit {
   destroyed$ = new Subject();
   network: HotspotNetwork;
-  error: any[];
-  success: any[];
 
   pwdControl = new FormControl('test_password', Validators.required);
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
@@ -38,37 +39,16 @@ export class WifiPasswordPage implements OnInit {
   receiveDataHandler = info => {
     try {
       const response = arrayBuffer2Response<{ ip }>(info.data);
-      this.success = [response, ...this.success];
+      this.log(response);
       this.wifiConnected(response.ip)
         .then(() => {
           this.router.navigate(['/home']);
         })
         .catch(err => {
-          this.error = [err, ...this.error];
+          this.log(err);
         });
     } catch (er) {
-      if (er === INVALID_WIFI_CONFIG_RESPONSE_HEADER) {
-        this.error = [
-          {
-            message: `Error. Invalid wifiConfig is received`
-          },
-          ...this.error
-        ];
-      } else if (er === WIFI_CONNECTION_FAILED_RESPONSE_HEADER) {
-        this.error = [
-          {
-            message: `Error. Could not connect to wifi with wifiConfig provided`
-          },
-          ...this.error
-        ];
-      } else {
-        this.error = [
-          {
-            message: `Unknown error: ${er}`
-          },
-          ...this.error
-        ];
-      }
+      this.log(errorMessages[er] || er);
     }
 
     // tslint:disable-next-line:semicolon
@@ -76,6 +56,7 @@ export class WifiPasswordPage implements OnInit {
 
   constructor(
     public wifiConfig: WifiConfigService,
+    public logger: LoggerService,
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingController,
     private hotspot: Hotspot,
@@ -96,17 +77,22 @@ export class WifiPasswordPage implements OnInit {
       });
   }
 
-  async sendWifiConfig() {
+  async sendWifiConfig(): Promise<any> {
+    this.logger.clear();
     const loader = await this.loadingCtrl.create({
       message: 'Sending Wifi Config....'
     });
-    await loader.present();
+    let res: Promise<any>;
+    loader.present();
     try {
       await this.sendNetworkData();
-    } catch (err) {
-      this.error = [err, ...this.error];
+      res = Promise.resolve();
+    } catch (er) {
+      this.error(JSON.stringify(er));
+      res = Promise.reject(er);
     }
-    await loader.dismiss();
+    loader.dismiss();
+    return res;
   }
 
   private async wifiConnected(ipAddress: string) {
@@ -116,8 +102,8 @@ export class WifiPasswordPage implements OnInit {
       await this.deviceStorage.addDevice('Rostyk', ssid, ipAddress);
       await this.hotspot.connectToWifi(ssid, this.pwdControl.value);
       return Promise.resolve();
-    } catch (err) {
-      return Promise.reject(err);
+    } catch (er) {
+      return Promise.reject(er);
     }
   }
 
@@ -125,7 +111,7 @@ export class WifiPasswordPage implements OnInit {
     try {
       const network = this.network;
       if (!network) {
-        return Promise.reject({ message: 'No network is defined' });
+        return Promise.reject('No network is defined');
       }
 
       const socketId = await TcpSockets.create();
@@ -139,14 +125,13 @@ export class WifiPasswordPage implements OnInit {
       const res = await TcpSockets.send(
         socketId,
         str2ArrayBuffer(
-          WIFI_CONFIG_REQUEST_HEADER,
-          network.SSID,
-          this.pwdControl.value
+          SET_WIFI_CONFIG_REQUEST_HEADER,
+          JSON.stringify({ ssid: network.SSID, pwd: this.pwdControl.value })
         )
       );
 
       return new Promise<any>(resolve => {
-        this.success = ['Data sent...', ...this.success];
+        this.log('Data sent');
         setTimeout(() => {
           TcpSockets.removeReceiveHandler(this.receiveDataHandler);
           TcpSockets.disconnect(socketId);
@@ -157,5 +142,13 @@ export class WifiPasswordPage implements OnInit {
     } catch (err) {
       return Promise.reject(err);
     }
+  }
+
+  private log(message) {
+    this.logger.log(message);
+  }
+
+  private error(message) {
+    this.logger.error(message);
   }
 }

@@ -1,12 +1,6 @@
-import { SUCCESS_RESPONSE_RESULT } from '../definitions';
-
 export const dataSeparator = '\n';
 
-export function str2ArrayBuffer(
-  messageType: string,
-  ...message: string[]
-): ArrayBuffer {
-  const str = message.join(dataSeparator);
+export function str2ArrayBuffer(messageType: string, str: string): ArrayBuffer {
   const length = str.length;
   const buffer = new ArrayBuffer(length + 1);
   const packet = new Uint8Array(buffer);
