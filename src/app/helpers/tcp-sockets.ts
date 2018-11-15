@@ -70,7 +70,7 @@ export async function disconnect(socketId: number): Promise<void> {
       });
     });
   } catch (err) {
-    Promise.reject(err);
+    return Promise.reject(err);
   }
 }
 
@@ -83,7 +83,7 @@ export async function close(socketId: number): Promise<void> {
       });
     });
   } catch (err) {
-    Promise.reject(err);
+    return Promise.reject(err);
   }
 }
 
@@ -95,7 +95,7 @@ export async function addReceiveHandler(
     tcp.onReceive.addListener(handler);
     return Promise.resolve();
   } catch (err) {
-    Promise.reject(err);
+    return Promise.reject(err);
   }
 }
 
@@ -107,24 +107,7 @@ export async function removeReceiveHandler(
     tcp.onReceive.removeListener(handler);
     return Promise.resolve();
   } catch (err) {
-    Promise.reject(err);
-  }
-}
-
-export async function setKeepAlive(
-  socketId: number,
-  enable = true,
-  keepAlive = 5 // seconds
-): Promise<void> {
-  try {
-    const tcp = await getTcp();
-    return new Promise<void>(resolve => {
-      tcp.setKeepAlive(socketId, enable, keepAlive, () => {
-        resolve();
-      });
-    });
-  } catch (err) {
-    Promise.reject(err);
+    return Promise.reject(err);
   }
 }
 
@@ -135,6 +118,5 @@ export const TcpSockets = {
   disconnect,
   close,
   addReceiveHandler,
-  removeReceiveHandler,
-  setKeepAlive
+  removeReceiveHandler
 };

@@ -29,34 +29,48 @@ import {
 export class WifiPasswordPage implements OnInit {
   destroyed$ = new Subject();
   network: HotspotNetwork;
-  error;
-  success;
+  error: any[];
+  success: any[];
 
-  pwdControl = new FormControl('rostyk10-10', Validators.required);
+  pwdControl = new FormControl('test_password', Validators.required);
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
 
   receiveDataHandler = info => {
-    const response = arrayBuffer2Response(info.data);
-    this.success = response.data;
-    const responseResult = response.responseResult;
-    if (responseResult === SUCCESS_RESPONSE_RESULT) {
-      const ipAddress = response.data;
-      this.wifiConnected(ipAddress)
+    try {
+      const response = arrayBuffer2Response<{ ip }>(info.data);
+      this.success = [response, ...this.success];
+      this.wifiConnected(response.ip)
         .then(() => {
           this.router.navigate(['/home']);
         })
         .catch(err => {
-          this.error = err;
+          this.error = [err, ...this.error];
         });
-    } else if (responseResult === INVALID_WIFI_CONFIG_RESPONSE_HEADER) {
-      this.error = {
-        message: `Error. Invalid wifiConfig is received`
-      };
-    } else if (responseResult === WIFI_CONNECTION_FAILED_RESPONSE_HEADER) {
-      this.error = {
-        message: `Error. Could not connect to wifi with wifiConfig provided`
-      };
+    } catch (er) {
+      if (er === INVALID_WIFI_CONFIG_RESPONSE_HEADER) {
+        this.error = [
+          {
+            message: `Error. Invalid wifiConfig is received`
+          },
+          ...this.error
+        ];
+      } else if (er === WIFI_CONNECTION_FAILED_RESPONSE_HEADER) {
+        this.error = [
+          {
+            message: `Error. Could not connect to wifi with wifiConfig provided`
+          },
+          ...this.error
+        ];
+      } else {
+        this.error = [
+          {
+            message: `Unknown error: ${er}`
+          },
+          ...this.error
+        ];
+      }
     }
+
     // tslint:disable-next-line:semicolon
   };
 
@@ -83,7 +97,6 @@ export class WifiPasswordPage implements OnInit {
   }
 
   async sendWifiConfig() {
-    this.error = null;
     const loader = await this.loadingCtrl.create({
       message: 'Sending Wifi Config....'
     });
@@ -91,7 +104,7 @@ export class WifiPasswordPage implements OnInit {
     try {
       await this.sendNetworkData();
     } catch (err) {
-      this.error = err;
+      this.error = [err, ...this.error];
     }
     await loader.dismiss();
   }
@@ -118,6 +131,7 @@ export class WifiPasswordPage implements OnInit {
       const socketId = await TcpSockets.create();
       await TcpSockets.connect(
         socketId,
+        // todo: move this to qr data
         '192.168.4.1'
       );
       await TcpSockets.addReceiveHandler(this.receiveDataHandler);
@@ -132,13 +146,13 @@ export class WifiPasswordPage implements OnInit {
       );
 
       return new Promise<any>(resolve => {
-        this.success = 'Data sent';
+        this.success = ['Data sent...', ...this.success];
         setTimeout(() => {
           TcpSockets.removeReceiveHandler(this.receiveDataHandler);
           TcpSockets.disconnect(socketId);
           TcpSockets.close(socketId);
           resolve(res);
-        }, 5000);
+        }, 6000);
       });
     } catch (err) {
       return Promise.reject(err);

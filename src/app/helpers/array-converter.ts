@@ -17,17 +17,21 @@ export function str2ArrayBuffer(
   return buffer;
 }
 
-export function arrayBuffer2Response(
-  buffer: ArrayBuffer
-): { responseResult: string; data: string; responseType: string } {
-  let data = '';
+export function arrayBuffer2Response<T>(buffer: ArrayBuffer): T {
+  let res = null;
   const ar = new Uint8Array(buffer);
-  const responseResult = String.fromCharCode(ar[0]);
-  const responseType = String.fromCharCode(ar[1]);
-  for (let i = 2; i < ar.length; i++) {
-    data = data + String.fromCharCode(ar[i]);
+  if (ar.length > 1) {
+    let data = '';
+
+    for (let i = 0; i < ar.length; i++) {
+      data = data + String.fromCharCode(ar[i]);
+    }
+    res = JSON.parse(data);
+  } else {
+    throw String.fromCharCode(ar[0]);
   }
-  return { responseResult, data, responseType };
+
+  return res;
 }
 
 export const ArrayConverter = { str2ArrayBuffer, arrayBuffer2Response };
