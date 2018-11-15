@@ -49,9 +49,12 @@ export class ScanQrPage implements OnInit, OnDestroy {
                   this.wifiConfig.accessPointSsid$.next(ssid);
                   this.router.navigate(['./wifi-config']);
                 })
-                .catch(() => {
+                .catch(er => {
                   this.handleError(
-                    'Could not connect Device Acess Point. Reset your Device and wait until Status Diod is red. Check your QR Code'
+                    `Could not connect Device Acess Point.
+                     Reset your Device and wait until Status Diod is red. Check your QR Code: ${JSON.stringify(
+                       er
+                     )}`
                   );
                 });
             } catch (err) {
@@ -81,15 +84,17 @@ export class ScanQrPage implements OnInit, OnDestroy {
     const loader = await this.loadingCtrl.create({
       message: 'Connecting Access Point....'
     });
-    await loader.present();
+    loader.present();
+    let res;
     try {
       await wifiConfig.scanWifi();
       await wifiConfig.connectWifi(ssid, password);
-      await loader.dismiss();
-      return Promise.resolve();
+      res = Promise.resolve();
     } catch (err) {
-      await loader.dismiss();
-      return Promise.reject(err);
+      res = Promise.reject(err);
     }
+
+    loader.dismiss();
+    return res;
   }
 }
