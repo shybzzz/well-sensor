@@ -1,5 +1,10 @@
 export interface QrConfig {
   deviceId: string;
-  ssid: string;
-  pwd: string;
+  apSSID: string;
+  apIP: string;
+  appPwd: string;
+  mqttServer: string;
+  mqttPort: number;
+  mqttUser: string;
+  mqttPwd: string;
 }

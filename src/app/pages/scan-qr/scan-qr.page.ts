@@ -3,7 +3,7 @@ import { Platform, LoadingController } from '@ionic/angular';
 import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { QrService } from '../../services/qr.service';
 import { Router } from '@angular/router';
-import { WifiConfigService } from '../wifi-config/wifi-config.service';
+import { WifiConfigService } from '../../services/wifi-config.service';
 import { QrConfig } from '../../model/qr-config';
 
 @Component({
@@ -43,10 +43,9 @@ export class ScanQrPage implements OnInit, OnDestroy {
               qr.data$.next(qrConfig);
               this.qrScanner.hide(); // hide camera preview
               scanSub.unsubscribe(); // stop scanning
-              const ssid = qrConfig.ssid;
-              this.connectHotSpot(ssid, qrConfig.pwd)
+              const apSSID = qrConfig.apSSID;
+              this.connectHotSpot(apSSID, qrConfig.appPwd)
                 .then(() => {
-                  this.wifiConfig.accessPointSsid$.next(ssid);
                   this.router.navigate(['./wifi-config']);
                 })
                 .catch(er => {

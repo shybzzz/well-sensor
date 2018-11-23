@@ -1,10 +1,10 @@
 export const dataSeparator = '\n';
 
-export function str2ArrayBuffer(messageType: string, str: string): ArrayBuffer {
+export function str2ArrayBuffer(messageType: number, str: string): ArrayBuffer {
   const length = str.length;
   const buffer = new ArrayBuffer(length + 1);
   const packet = new Uint8Array(buffer);
-  packet[0] = messageType.charCodeAt(0);
+  packet[0] = messageType;
   for (let lc = 0; lc < length; lc++) {
     packet[1 + lc] = str.charCodeAt(lc);
   }

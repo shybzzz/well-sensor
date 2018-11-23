@@ -2,7 +2,7 @@ import { Subject } from 'rxjs/internal/Subject';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, LoadingController } from '@ionic/angular';
 import { HotspotNetwork } from '@ionic-native/hotspot/ngx';
-import { WifiConfigService } from './wifi-config.service';
+import { WifiConfigService } from '../../services/wifi-config.service';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({

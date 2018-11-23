@@ -8,7 +8,6 @@ import { combineLatest, map } from 'rxjs/operators';
 })
 export class WifiConfigService {
   selectedNetwork$ = new ReplaySubject<HotspotNetwork>(1);
-  accessPointSsid$ = new ReplaySubject<string>(1);
   networks$ = new ReplaySubject<HotspotNetwork[]>();
   currentSsid$ = new BehaviorSubject<string>('');
 
