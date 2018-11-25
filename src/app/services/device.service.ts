@@ -1,9 +1,18 @@
 import { StorageDevice } from '../model/storage-device';
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { DeviceStorageService } from './device-storage.service';
 
-export const mockDevice = { id: 'Test', ssid: '', ipAddress: '', mqttOptions: {} };
+const mockDevice: StorageDevice = {
+  id: 'Test',
+  ssid: '',
+  ipAddress: '',
+  mqttOptions: {
+    username: 'afpodcuo',
+    password: 'UwxwRLCN-sIX',
+    servers: [{ host: 'm15.cloudmqtt.com', port: 39557 /*19557 29557 39557*/ }]
+  }
+};
 const mockDevices: StorageDevice[] = [mockDevice];
 
 @Injectable({
@@ -11,7 +20,7 @@ const mockDevices: StorageDevice[] = [mockDevice];
 })
 export class DeviceService {
   devices$ = new ReplaySubject<StorageDevice[]>(1);
-  currentDevice$ = new ReplaySubject<StorageDevice>(1);
+  currentDevice$ = new BehaviorSubject<StorageDevice>(mockDevice);
 
   constructor(private deviceStorage: DeviceStorageService) {}
 

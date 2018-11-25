@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { IonicStorageModule } from '@ionic/storage';
 import { Hotspot } from '@ionic-native/hotspot/ngx';
+import { MqttModule } from 'ngx-mqtt';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,7 +19,8 @@ import { Hotspot } from '@ionic-native/hotspot/ngx';
     BrowserModule,
     IonicModule.forRoot(),
     IonicStorageModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
+    MqttModule.forRoot({ connectOnCreate: false, path: '', protocol: 'wss' })
   ],
   providers: [
     StatusBar,

@@ -9,22 +9,27 @@
 
 <ion-content padding>
   <ion-list>
+    <ion-item *ngIf="value">
+      <div class="big">{{ value }} m</div>
+    </ion-item>
     <ion-item *ngIf="success" color="secondary">
       {{ success | json }}
     </ion-item>
     <ion-item *ngIf="error" color="danger">
       Oops... {{ error.message | json }}
     </ion-item>
-    <ion-item>
-      <ion-button
-        (click)="removeDevice(currentDevice?.id)"
-        color="danger"
-        outline
-      >
-        <ion-icon name="trash"></ion-icon>
-        <ion-label>Remove</ion-label>
-      </ion-button>
-    </ion-item>
+    <!--
+      <ion-item>
+        <ion-button
+          (click)="removeDevice()"
+          color="danger"
+          outline
+        >
+          <ion-icon name="trash"></ion-icon>
+          <ion-label>Remove Device</ion-label>
+        </ion-button>
+      </ion-item>
+    -->
     <ion-list-header>
       <ion-label>
         <ion-icon name="wifi"></ion-icon>
@@ -46,10 +51,14 @@
     <ion-list-header>
       <ion-label>
         <ion-icon name="wifi"></ion-icon>
-        MQTT
+        MQTT Settings
       </ion-label>
     </ion-list-header>
 
-    <ion-item> {{ currentDevice | json }} </ion-item>
+    <ion-item>
+      {{ (currentDevice?.mqttOptions?.servers)[0]?.host }}:{{
+        (currentDevice?.mqttOptions?.servers)[0]?.port
+      }}
+    </ion-item>
   </ion-list>
 </ion-content>

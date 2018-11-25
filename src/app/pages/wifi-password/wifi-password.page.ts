@@ -29,6 +29,7 @@ import { QrService } from '../../services/qr.service';
 import { ConfigQr } from '../../model/config-qr';
 import { ResponseDeviceConnected } from '../../model/response-device-connected';
 import { DeviceService } from '../../services/device.service';
+import { StorageDevice } from '../../model/storage-device';
 
 @Component({
   selector: 'app-wifi-password',
@@ -53,7 +54,7 @@ export class WifiPasswordPage implements OnInit {
           this.router.navigate(['/device']);
         })
         .catch(err => {
-          this.log(err);
+          this.error(err);
         });
     } catch (er) {
       this.error(errorMessages[er] || er);
@@ -108,20 +109,18 @@ export class WifiPasswordPage implements OnInit {
     const loader = await this.loadingCtrl.create({
       message: 'Saving Config....'
     });
-    loader.present();
-    const ssid = response.ssid;
+    await loader.present();
     let res: Promise<any>;
     try {
       const qrConfig = this.qrConfig;
-      const device = {
+      const device: StorageDevice = {
         id: qrConfig.deviceId,
         ssid: response.ssid,
         ipAddress: response.ip,
         mqttOptions: {
-          hostname: response.server,
-          port: response.port,
           username: response.user,
-          password: qrConfig.mqttPwd
+          password: qrConfig.mqttPwd,
+          servers: [{ host: response.server, port: this.qrConfig.wssPort }]
         }
       };
       await this.deviceStorage.addDevice(device);
