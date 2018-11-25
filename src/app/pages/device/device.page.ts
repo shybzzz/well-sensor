@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { Device } from '../../model/device';
-import { DeviceService } from '../../services/device.service';
+import { StorageDevice } from '../../model/storage-device';
+import { DeviceService, mockDevice } from '../../services/device.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./device.page.scss']
 })
 export class DevicePage implements OnInit, OnDestroy {
-  currentDevice: Device;
+  currentDevice: StorageDevice = mockDevice;
   success;
   error;
   destroy$ = new Subject();
@@ -24,16 +24,23 @@ export class DevicePage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.platform.ready().then(() => {
-      const device = this.device;
-      device.deviceId$.pipe(takeUntil(this.destroy$)).subscribe(deviceId => {
-        this.loadDevice(deviceId).catch(err => {
-          this.error = { message: err };
-        });
-      });
-      device.currentDevice$.pipe(takeUntil(this.destroy$)).subscribe(d => {
-        this.currentDevice = d;
-      });
+    // this.success = 'init';
+    // this.platform.ready().then(() => {
+    //   const device = this.device;
+    //   this.success = 'ready';
+    //   device.currentDevice$.pipe(takeUntil(this.destroy$)).subscribe(d => {
+    //     this.success = 'device';
+    //     this.currentDevice = d;
+    //   });
+    // });
+  }
+
+  ionViewWillEnter() {
+    const device = this.device;
+    this.success = 'ready';
+    device.currentDevice$.pipe(takeUntil(this.destroy$)).subscribe(d => {
+      this.success = 'device';
+      this.currentDevice = d;
     });
   }
 
@@ -41,39 +48,28 @@ export class DevicePage implements OnInit, OnDestroy {
     this.destroy$.next();
   }
 
-  removeDevice(id) {
-    this.removeDeviceAsync(id).then(() => {
-      this.router.navigate(['/home']);
-    });
+  removeDevice() {
+    this.removeDeviceAsync()
+      .then(() => {
+        this.router.navigate(['/home']);
+      })
+      .catch(err => {
+        this.error = { message: err };
+      });
   }
 
-  async removeDeviceAsync(id) {
+  async removeDeviceAsync() {
+    const currentDevice = this.currentDevice;
     const loader = await this.loadingCtrl.create({
-      message: `Removing Device ${id}....`
+      message: `Removing Device ${currentDevice.id}....`
     });
     await loader.present();
     let res: Promise<void>;
     try {
-      await this.device.removeDevice(id);
+      await this.device.removeDevice(currentDevice);
       res = Promise.resolve();
     } catch (err) {
       res = Promise.reject(err);
-    }
-    await loader.dismiss();
-    return res;
-  }
-
-  private async loadDevice(deviceId: string): Promise<void> {
-    const loader = await this.loadingCtrl.create({
-      message: 'Loading Device....'
-    });
-    await loader.present();
-    let res: Promise<void>;
-    try {
-      await this.device.setCurrentDevice(deviceId);
-      res = Promise.resolve();
-    } catch (err) {
-      res = Promise.reject();
     }
     await loader.dismiss();
     return res;

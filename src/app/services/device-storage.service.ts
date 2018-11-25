@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
-import { Device } from '../model/device';
-import { generateId, deviceList } from '../helpers/device-storage';
+import { StorageDevice } from '../model/storage-device';
+import { deviceList } from '../helpers/device-storage';
 
 @Injectable({
   providedIn: 'root'
@@ -9,23 +9,18 @@ import { generateId, deviceList } from '../helpers/device-storage';
 export class DeviceStorageService {
   constructor(private storage: Storage) {}
 
-  async addDevice(
-    id: string,
-    ssid: string,
-    ipAddress: string
-  ): Promise<Device> {
+  async addDevice(device: StorageDevice): Promise<StorageDevice> {
     try {
       const storage = this.storage;
       let devices = await this.getDevices();
-      const deviceIndex = devices ? devices.findIndex(d => d.id === id) : -1;
-      let device: Device;
+      const deviceIndex = devices
+        ? devices.findIndex(d => d.id === device.id)
+        : -1;
       if (deviceIndex === -1) {
-        device = { id, ssid, ipAddress };
         devices = [device, ...devices];
       } else {
-        device = devices[deviceIndex];
-        device.ssid = ssid;
-        device.ipAddress = ipAddress;
+        const d = devices[deviceIndex];
+        devices[deviceIndex] = { ...d, ...device };
       }
       await storage.set(deviceList, devices);
 
@@ -35,28 +30,29 @@ export class DeviceStorageService {
     }
   }
 
-  async getDevices(): Promise<Device[]> {
+  async getDevices(): Promise<StorageDevice[]> {
     return this.storage.get(deviceList);
   }
 
-  async removeDevice(id: string): Promise<void> {
+  async removeDevice(device: StorageDevice): Promise<void> {
     try {
       const devices = await this.getDevices();
+      const deviceId = device.id;
       const removeIndex = devices
-        ? devices.findIndex(device => device.id === id)
+        ? devices.findIndex(d => d.id === deviceId)
         : -1;
       if (removeIndex > -1) {
         devices.splice(removeIndex, 1);
         return this.storage.set(deviceList, devices);
       } else {
-        return Promise.reject(`Device ${id} does not exist`);
+        return Promise.reject(`Device ${deviceId} does not exist`);
       }
     } catch (err) {
       return Promise.reject(err);
     }
   }
 
-  async getDevice(id: string): Promise<Device> {
+  async getDevice(id: string): Promise<StorageDevice> {
     try {
       const devices = await this.getDevices();
       return Promise.resolve(devices.find(d => d.id === id));

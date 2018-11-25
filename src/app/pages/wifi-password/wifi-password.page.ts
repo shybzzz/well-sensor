@@ -4,7 +4,7 @@ import {
   WIFI_CONFIG_SSID,
   WIFI_CONFIG_PWD
 } from '../../definitions';
-import { HotspotNetwork, Hotspot } from '@ionic-native/hotspot/ngx';
+import { HotspotNetwork } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from '../../services/wifi-config.service';
 import { Component, OnInit } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
@@ -26,7 +26,9 @@ import {
   MQTT_CONFIG_PWD
 } from '../../definitions';
 import { QrService } from '../../services/qr.service';
-import { QrConfig } from '../../model/qr-config';
+import { ConfigQr } from '../../model/config-qr';
+import { ResponseDeviceConnected } from '../../model/response-device-connected';
+import { DeviceService } from '../../services/device.service';
 
 @Component({
   selector: 'app-wifi-password',
@@ -37,17 +39,18 @@ import { QrConfig } from '../../model/qr-config';
 export class WifiPasswordPage implements OnInit {
   destroyed$ = new Subject();
   network: HotspotNetwork;
-  qrConfig: QrConfig;
+  qrConfig: ConfigQr;
 
   pwdControl = new FormControl('test_password', Validators.required);
   formGroup = this.formBuilder.group({ pwd: this.pwdControl });
 
   receiveDataHandler = info => {
     try {
-      const response = arrayBuffer2Response<{ ip }>(info.data);
-      this.wifiConnected(response.ip)
+      const response = arrayBuffer2Response<ResponseDeviceConnected>(info.data);
+      this.wifiConnected(response)
         .then(() => {
-          this.router.navigate(['/home']);
+          this.log('Done');
+          this.router.navigate(['/device']);
         })
         .catch(err => {
           this.log(err);
@@ -64,10 +67,10 @@ export class WifiPasswordPage implements OnInit {
     public logger: LoggerService,
     private formBuilder: FormBuilder,
     private loadingCtrl: LoadingController,
-    private hotspot: Hotspot,
     private deviceStorage: DeviceStorageService,
     private qr: QrService,
-    private router: Router
+    private router: Router,
+    private device: DeviceService
   ) {}
 
   ngOnInit() {
@@ -84,10 +87,10 @@ export class WifiPasswordPage implements OnInit {
   async sendWifiConfig(): Promise<any> {
     this.logger.clear();
     const loader = await this.loadingCtrl.create({
-      message: 'Sending Wifi Config....'
+      message: 'Sending Config....'
     });
-    let res: Promise<any>;
     loader.present();
+    let res: Promise<any>;
     try {
       await this.sendNetworkData();
       res = Promise.resolve();
@@ -99,16 +102,37 @@ export class WifiPasswordPage implements OnInit {
     return res;
   }
 
-  private async wifiConnected(ipAddress: string) {
-    const network = this.network;
-    const ssid = network && network.SSID;
+  private async wifiConnected(
+    response: ResponseDeviceConnected
+  ): Promise<void> {
+    const loader = await this.loadingCtrl.create({
+      message: 'Saving Config....'
+    });
+    loader.present();
+    const ssid = response.ssid;
+    let res: Promise<any>;
     try {
-      await this.deviceStorage.addDevice(this.qrConfig.deviceId, ssid, ipAddress);
-      await this.hotspot.connectToWifi(ssid, this.pwdControl.value);
-      return Promise.resolve();
+      const qrConfig = this.qrConfig;
+      const device = {
+        id: qrConfig.deviceId,
+        ssid: response.ssid,
+        ipAddress: response.ip,
+        mqttOptions: {
+          hostname: response.server,
+          port: response.port,
+          username: response.user,
+          password: qrConfig.mqttPwd
+        }
+      };
+      await this.deviceStorage.addDevice(device);
+      this.device.currentDevice$.next(device);
+      res = Promise.resolve();
     } catch (er) {
-      return Promise.reject(er);
+      res = Promise.reject(er);
     }
+
+    loader.dismiss();
+    return res;
   }
 
   private async sendNetworkData(): Promise<any> {
@@ -130,9 +154,9 @@ export class WifiPasswordPage implements OnInit {
       const creds = {};
       creds[WIFI_CONFIG_SSID] = network.SSID;
       creds[WIFI_CONFIG_PWD] = this.pwdControl.value;
-      creds[MQTT_CONFIG_SERVER] = qrConfig.mqttServer;
-      creds[MQTT_CONFIG_PORT] = qrConfig.mqttPort;
-      creds[MQTT_CONFIG_USER] = qrConfig.mqttUser;
+      creds[MQTT_CONFIG_SERVER] = qrConfig.server;
+      creds[MQTT_CONFIG_PORT] = qrConfig.port;
+      creds[MQTT_CONFIG_USER] = qrConfig.user;
       creds[MQTT_CONFIG_PWD] = qrConfig.mqttPwd;
 
       const res = await TcpSockets.send(

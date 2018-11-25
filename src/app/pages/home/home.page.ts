@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, LoadingController } from '@ionic/angular';
-import { Device } from '../../model/device';
-import { Router } from '@angular/router';
+import { StorageDevice } from '../../model/storage-device';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DeviceService } from '../../services/device.service';
@@ -12,7 +11,7 @@ import { DeviceService } from '../../services/device.service';
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit, OnDestroy {
-  devices: Device[];
+  devices: StorageDevice[];
   success;
   error;
   destroy$ = new Subject();
@@ -20,8 +19,7 @@ export class HomePage implements OnInit, OnDestroy {
   constructor(
     private platform: Platform,
     private loadingCtrl: LoadingController,
-    private device: DeviceService,
-    private router: Router
+    private device: DeviceService
   ) {}
 
   ngOnInit(): void {
@@ -39,9 +37,8 @@ export class HomePage implements OnInit, OnDestroy {
     this.destroy$.next();
   }
 
-  openDevicePage(deviceId: string) {
-    this.device.deviceId$.next(deviceId);
-    this.router.navigate(['/device']);
+  openDevicePage(device: StorageDevice) {
+    this.device.currentDevice$.next(device);
   }
 
   private async loadDevices(): Promise<void> {

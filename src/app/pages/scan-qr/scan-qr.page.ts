@@ -4,7 +4,7 @@ import { QRScanner } from '@ionic-native/qr-scanner/ngx';
 import { QrService } from '../../services/qr.service';
 import { Router } from '@angular/router';
 import { WifiConfigService } from '../../services/wifi-config.service';
-import { QrConfig } from '../../model/qr-config';
+import { ConfigQr } from '../../model/config-qr';
 
 @Component({
   selector: 'app-scan-qr',
@@ -39,7 +39,7 @@ export class ScanQrPage implements OnInit, OnDestroy {
         const scanSub = this.qrScanner.scan().subscribe(
           (text: string) => {
             try {
-              const qrConfig: QrConfig = JSON.parse(text);
+              const qrConfig: ConfigQr = JSON.parse(text);
               qr.data$.next(qrConfig);
               this.qrScanner.hide(); // hide camera preview
               scanSub.unsubscribe(); // stop scanning

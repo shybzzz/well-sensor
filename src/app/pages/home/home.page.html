@@ -3,19 +3,17 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>
-      Well Sensor
-    </ion-title>
+    <ion-title> Well Sensor </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
   <ion-list>
     <ion-item *ngIf="success" color="secondary">
-      {{success | json}}
+      {{ success | json }}
     </ion-item>
     <ion-item *ngIf="error" color="danger">
-      Oops... {{error.message | json}}
+      Oops... {{ error.message | json }}
     </ion-item>
     <ion-list-header>
       <ion-label>
@@ -24,9 +22,14 @@
       </ion-label>
     </ion-list-header>
 
-    <ion-item *ngFor="let d of devices" (click)="openDevicePage(d.id)">
-      <ion-label>{{d.ssid}}</ion-label>
-      <ion-label>{{d.ipAddress}}</ion-label>
+    <ion-item
+      *ngFor="let d of devices"
+      (click)="openDevicePage(d)"
+      [routerDirection]="'root'"
+      [routerLink]="['/device']"
+    >
+      <ion-label>{{ d.id }}</ion-label>
+      <ion-badge *ngIf="d.mqttOptions">MQTT</ion-badge>
     </ion-item>
   </ion-list>
 </ion-content>
