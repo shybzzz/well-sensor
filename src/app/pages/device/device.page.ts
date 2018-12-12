@@ -5,7 +5,13 @@ import { StorageDevice } from '../../model/storage-device';
 import { DeviceService } from '../../services/device.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MqttService } from 'ngx-mqtt';
+import { MqttService, IMqttMessage } from 'ngx-mqtt';
+import {
+  TOPIC_DATA,
+  TOPIC_FILTER_MEDIAN,
+  TOPIC_FILTER_MEAN,
+  TOPIC_FILTER_EXP_SMOOTH
+} from '../../definitions';
 
 @Component({
   selector: 'app-device',
@@ -17,7 +23,10 @@ export class DevicePage implements OnInit, OnDestroy {
   success;
   error;
 
-  value: string;
+  data: number;
+  median: number;
+  mean: number;
+  expSmooth: number;
 
   destroy$ = new Subject();
 
@@ -25,13 +34,13 @@ export class DevicePage implements OnInit, OnDestroy {
     private loadingCtrl: LoadingController,
     private router: Router,
     private device: DeviceService,
-    private mqqt: MqttService
+    private mqtt: MqttService
   ) {}
 
   ngOnInit() {}
 
   ionViewWillEnter() {
-    const mqtt = this.mqqt;
+    const mqtt = this.mqtt;
 
     const device = this.device;
     device.currentDevice$.pipe(takeUntil(this.destroy$)).subscribe(d => {
@@ -39,19 +48,25 @@ export class DevicePage implements OnInit, OnDestroy {
       // mqtt.disconnect(true);
       const mqttOptions = d.mqttOptions;
       if (mqttOptions) {
-        this.mqqt.connect(mqttOptions);
-        mqtt
-          .observe('data')
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(m => {
-            this.value = m.payload.toString();
-          });
+        mqtt.connect(mqttOptions);
+        this.observeTopic(TOPIC_DATA, m => {
+          this.data = this.getMqttValue(m);
+        });
+        this.observeTopic(TOPIC_FILTER_MEDIAN, m => {
+          this.median = this.getMqttValue(m);
+        });
+        this.observeTopic(TOPIC_FILTER_MEAN, m => {
+          this.mean = this.getMqttValue(m);
+        });
+        this.observeTopic(TOPIC_FILTER_EXP_SMOOTH, m => {
+          this.expSmooth = this.getMqttValue(m);
+        });
       }
     });
   }
 
   ngOnDestroy() {
-    this.mqqt.disconnect(true);
+    this.mqtt.disconnect(true);
     this.destroy$.next();
   }
 
@@ -80,5 +95,20 @@ export class DevicePage implements OnInit, OnDestroy {
     }
     loader.dismiss();
     return res;
+  }
+
+  private getMqttValue(m: IMqttMessage): number {
+    try {
+      return JSON.parse(m.payload.toString()).value;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  private observeTopic(topic: string, h: (m: IMqttMessage) => void): void {
+    this.mqtt
+      .observe(topic)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(h);
   }
 }

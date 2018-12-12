@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { DevicePage } from './device.page';
+import { DepthModule } from '../../pipes/depth/depth.module';
 
 const routes: Routes = [
   {
@@ -19,7 +20,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes),
+    DepthModule,
+    RouterModule.forChild(routes)
   ],
   declarations: [DevicePage]
 })

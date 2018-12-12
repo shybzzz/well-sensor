@@ -9,8 +9,23 @@
 
 <ion-content padding>
   <ion-list>
-    <ion-item *ngIf="value">
-      <div class="big">{{ value }} m</div>
+    <ion-list-header> <ion-label> Depth </ion-label> </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <div class="big">{{ data | depth }}</div>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Median</ion-label>
+      <ion-label>{{ median | depth }}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Mean</ion-label>
+      <ion-label>{{ mean | depth }}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Exp Smooth</ion-label>
+      <ion-label>{{ expSmooth | depth }}</ion-label>
     </ion-item>
     <ion-item *ngIf="success" color="secondary">
       {{ success | json }}
