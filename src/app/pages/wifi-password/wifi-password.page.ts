@@ -23,7 +23,8 @@ import {
   MQTT_CONFIG_USER,
   MQTT_CONFIG_SERVER,
   MQTT_CONFIG_PORT,
-  MQTT_CONFIG_PWD
+  MQTT_CONFIG_PWD,
+  MQTT_CONFIG_DEVICE_ID
 } from '../../definitions';
 import { QrService } from '../../services/qr.service';
 import { ConfigQr } from '../../model/config-qr';
@@ -157,6 +158,7 @@ export class WifiPasswordPage implements OnInit {
       creds[MQTT_CONFIG_PORT] = qrConfig.port;
       creds[MQTT_CONFIG_USER] = qrConfig.user;
       creds[MQTT_CONFIG_PWD] = qrConfig.mqttPwd;
+      creds[MQTT_CONFIG_DEVICE_ID] = qrConfig.deviceId;
 
       const res = await TcpSockets.send(
         socketId,

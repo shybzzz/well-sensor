@@ -33,6 +33,7 @@ export const MQTT_CONFIG_SERVER = 'server';
 export const MQTT_CONFIG_PORT = 'port';
 export const MQTT_CONFIG_USER = 'user';
 export const MQTT_CONFIG_PWD = 'mqttPwd';
+export const MQTT_CONFIG_DEVICE_ID = 'deviceId';
 
 // MQTT Payload Keys
 export const PAYLOAD_DEVICE = 'device';
@@ -44,3 +45,4 @@ export const TOPIC_DATA = 'Data';
 export const TOPIC_FILTER_MEAN = 'Filter/Mean';
 export const TOPIC_FILTER_MEDIAN = 'Filter/Median';
 export const TOPIC_FILTER_EXP_SMOOTH = 'Filter/ExpSmooth';
+export const TOPIC_SEPARATOR = '/';

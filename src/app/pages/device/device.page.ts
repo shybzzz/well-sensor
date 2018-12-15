@@ -10,7 +10,8 @@ import {
   TOPIC_DATA,
   TOPIC_FILTER_MEDIAN,
   TOPIC_FILTER_MEAN,
-  TOPIC_FILTER_EXP_SMOOTH
+  TOPIC_FILTER_EXP_SMOOTH,
+  TOPIC_SEPARATOR
 } from '../../definitions';
 
 @Component({
@@ -107,7 +108,7 @@ export class DevicePage implements OnInit, OnDestroy {
 
   private observeTopic(topic: string, h: (m: IMqttMessage) => void): void {
     this.mqtt
-      .observe(topic)
+      .observe(`${this.currentDevice.id}${TOPIC_SEPARATOR}${topic}`)
       .pipe(takeUntil(this.destroy$))
       .subscribe(h);
   }
