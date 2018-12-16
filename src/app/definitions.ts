@@ -39,10 +39,11 @@ export const MQTT_CONFIG_DEVICE_ID = 'deviceId';
 export const PAYLOAD_DEVICE = 'device';
 export const PAYLOAD_TOPIC = 'topic';
 export const PAYLOAD_VALUE = 'value';
+export const PAYLOAD_VALUE_DATA = 'data';
+export const PAYLOAD_VALUE_MEDIAN = 'median';
+export const PAYLOAD_VALUE_MEAN = 'mean';
+export const PAYLOAD_VALUE_EXP_SMOOTH = 'expSmooth';
 
 // MQTT Topics
 export const TOPIC_DATA = 'Data';
-export const TOPIC_FILTER_MEAN = 'Filter/Mean';
-export const TOPIC_FILTER_MEDIAN = 'Filter/Median';
-export const TOPIC_FILTER_EXP_SMOOTH = 'Filter/ExpSmooth';
 export const TOPIC_SEPARATOR = '/';

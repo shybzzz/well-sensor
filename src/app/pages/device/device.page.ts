@@ -8,10 +8,12 @@ import { takeUntil } from 'rxjs/operators';
 import { MqttService, IMqttMessage } from 'ngx-mqtt';
 import {
   TOPIC_DATA,
-  TOPIC_FILTER_MEDIAN,
-  TOPIC_FILTER_MEAN,
-  TOPIC_FILTER_EXP_SMOOTH,
-  TOPIC_SEPARATOR
+  TOPIC_SEPARATOR,
+  PAYLOAD_VALUE,
+  PAYLOAD_VALUE_DATA,
+  PAYLOAD_VALUE_MEDIAN,
+  PAYLOAD_VALUE_MEAN,
+  PAYLOAD_VALUE_EXP_SMOOTH
 } from '../../definitions';
 
 @Component({
@@ -51,16 +53,11 @@ export class DevicePage implements OnInit, OnDestroy {
       if (mqttOptions) {
         mqtt.connect(mqttOptions);
         this.observeTopic(TOPIC_DATA, m => {
-          this.data = this.getMqttValue(m);
-        });
-        this.observeTopic(TOPIC_FILTER_MEDIAN, m => {
-          this.median = this.getMqttValue(m);
-        });
-        this.observeTopic(TOPIC_FILTER_MEAN, m => {
-          this.mean = this.getMqttValue(m);
-        });
-        this.observeTopic(TOPIC_FILTER_EXP_SMOOTH, m => {
-          this.expSmooth = this.getMqttValue(m);
+          const value = this.getMqttValue(m);
+          this.data = value && value[PAYLOAD_VALUE_DATA];
+          this.median = value && value[PAYLOAD_VALUE_MEDIAN];
+          this.mean = value && value[PAYLOAD_VALUE_MEAN];
+          this.expSmooth = value && value[PAYLOAD_VALUE_EXP_SMOOTH];
         });
       }
     });
@@ -98,9 +95,10 @@ export class DevicePage implements OnInit, OnDestroy {
     return res;
   }
 
-  private getMqttValue(m: IMqttMessage): number {
+  private getMqttValue(m: IMqttMessage): {} {
     try {
-      return JSON.parse(m.payload.toString()).value;
+      const payload = JSON.parse(m.payload.toString());
+      return payload && payload[PAYLOAD_VALUE];
     } catch (err) {
       return null;
     }
