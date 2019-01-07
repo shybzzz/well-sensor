@@ -2,7 +2,8 @@ import { LoggerService } from './../../services/logger.service';
 import {
   errorMessages,
   WIFI_CONFIG_SSID,
-  WIFI_CONFIG_PWD
+  WIFI_CONFIG_PWD,
+  SENSOR_CONFIG_TYPE
 } from '../../definitions';
 import { HotspotNetwork } from '@ionic-native/hotspot/ngx';
 import { WifiConfigService } from '../../services/wifi-config.service';
@@ -48,13 +49,16 @@ export class WifiPasswordPage implements OnInit {
 
   receiveDataHandler = info => {
     try {
-      const response = arrayBuffer2Response<ResponseDeviceConnected>(info.data);
+      const data = info.data;
+      const response = arrayBuffer2Response<ResponseDeviceConnected>(data);
+      this.log(response);
       this.wifiConnected(response)
         .then(() => {
           this.log('Done');
           this.router.navigate(['/device']);
         })
         .catch(err => {
+          this.error(`Connecting to ${response.ssid} failed`);
           this.error(err);
         });
     } catch (er) {
@@ -84,6 +88,9 @@ export class WifiPasswordPage implements OnInit {
     this.qr.data$.pipe(takeUntil(this.destroyed$)).subscribe(config => {
       this.qrConfig = config;
     });
+    this.deviceStorage.log$.pipe(takeUntil(this.destroyed$)).subscribe(m => {
+      this.log(m);
+    });
   }
 
   async sendWifiConfig(): Promise<any> {
@@ -97,7 +104,7 @@ export class WifiPasswordPage implements OnInit {
       await this.sendNetworkData();
       res = Promise.resolve();
     } catch (er) {
-      this.error(JSON.stringify(er));
+      this.error(er);
       res = Promise.reject(er);
     }
     loader.dismiss();
@@ -111,10 +118,11 @@ export class WifiPasswordPage implements OnInit {
       message: 'Saving Config....'
     });
     await loader.present();
+    this.log('Loader presented');
     let res: Promise<any>;
     try {
       const qrConfig = this.qrConfig;
-      const device: StorageDevice = {
+      const device = {
         id: qrConfig.deviceId,
         ssid: response.ssid,
         ipAddress: response.ip,
@@ -128,6 +136,7 @@ export class WifiPasswordPage implements OnInit {
       this.device.currentDevice$.next(device);
       res = Promise.resolve();
     } catch (er) {
+      this.error('Saving failed');
       res = Promise.reject(er);
     }
 
@@ -151,6 +160,8 @@ export class WifiPasswordPage implements OnInit {
       );
       await TcpSockets.addReceiveHandler(this.receiveDataHandler);
 
+      this.log('Initialized tcp');
+
       const creds = {};
       creds[WIFI_CONFIG_SSID] = network.SSID;
       creds[WIFI_CONFIG_PWD] = this.pwdControl.value;
@@ -159,12 +170,13 @@ export class WifiPasswordPage implements OnInit {
       creds[MQTT_CONFIG_USER] = qrConfig.user;
       creds[MQTT_CONFIG_PWD] = qrConfig.mqttPwd;
       creds[MQTT_CONFIG_DEVICE_ID] = qrConfig.deviceId;
+      creds[SENSOR_CONFIG_TYPE] = qrConfig.sensorType;
 
       const res = await TcpSockets.send(
         socketId,
         str2ArrayBuffer(SET_CONFIG_REQUEST_HEADER, JSON.stringify(creds))
       );
-
+      this.log('Sending Data...');
       return new Promise<any>(resolve => {
         this.log('Data sent');
         setTimeout(() => {

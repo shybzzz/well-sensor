@@ -57,7 +57,7 @@ export class ScanQrPage implements OnInit, OnDestroy {
                   );
                 });
             } catch (err) {
-              this.handleError('QR is not valid');
+              this.handleError(`QR is not valid: ${JSON.stringify(err)}`);
             }
           },
           err => {

@@ -47,3 +47,15 @@ export const PAYLOAD_VALUE_EXP_SMOOTH = 'expSmooth';
 // MQTT Topics
 export const TOPIC_DATA = 'Data';
 export const TOPIC_SEPARATOR = '/';
+
+//  Sensor Config Keys
+export const SENSOR_CONFIG_TYPE = 'sensorType';
+
+// Sensor Types
+export enum SensorType {
+  SENSOR_SIMULATED = 0,
+  SENSOR_ANALOG_TEST = 1,
+  SENSOR_DS18B20 = 2,
+  SENSOR_GUT800 = 3,
+  SENSOR_INA250A2PW = 4
+}
