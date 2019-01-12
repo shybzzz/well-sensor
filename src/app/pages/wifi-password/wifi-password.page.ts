@@ -122,7 +122,7 @@ export class WifiPasswordPage implements OnInit {
     let res: Promise<any>;
     try {
       const qrConfig = this.qrConfig;
-      const device = {
+      const device: StorageDevice = {
         id: qrConfig.deviceId,
         ssid: response.ssid,
         ipAddress: response.ip,
@@ -130,7 +130,8 @@ export class WifiPasswordPage implements OnInit {
           username: response.user,
           password: qrConfig.mqttPwd,
           servers: [{ host: response.server, port: this.qrConfig.wssPort }]
-        }
+        },
+        sensorType: qrConfig.sensorType
       };
       await this.deviceStorage.addDevice(device);
       this.device.currentDevice$.next(device);

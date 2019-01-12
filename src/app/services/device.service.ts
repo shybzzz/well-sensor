@@ -2,6 +2,7 @@ import { StorageDevice } from '../model/storage-device';
 import { Injectable } from '@angular/core';
 import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { DeviceStorageService } from './device-storage.service';
+import { SensorType } from '../definitions';
 
 const mockDevice: StorageDevice = {
   id: 'Test',
@@ -11,7 +12,8 @@ const mockDevice: StorageDevice = {
     username: 'afpodcuo',
     password: 'UwxwRLCN-sIX',
     servers: [{ host: 'm15.cloudmqtt.com', port: 39557 /*19557 29557 39557*/ }]
-  }
+  },
+  sensorType: SensorType.SENSOR_SIMULATED
 };
 const mockDevices: StorageDevice[] = [mockDevice];
 

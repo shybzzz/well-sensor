@@ -5,11 +5,13 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 
 import { HomePage } from './home.page';
+import { SensorTypeModule } from '../../pipes/sensor-type/sensor-type.module';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
+    SensorTypeModule,
     RouterModule.forChild([
       {
         path: '',
@@ -19,4 +21,4 @@ import { HomePage } from './home.page';
   ],
   declarations: [HomePage]
 })
-export class HomePageModule { }
+export class HomePageModule {}

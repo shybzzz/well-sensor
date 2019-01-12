@@ -1,0 +1,29 @@
+.devices {
+  .device {
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  .simulated {
+    background-image: url('../assets/icon/sine.png');
+  }
+
+  .potentiometer {
+    background-image: url('../assets/icon/potentiometer.png');
+  }
+
+  .temperature {
+    background-image: url('../assets/icon/temperature.png');
+  }
+
+  .depth {
+    background-image: url('../assets/icon/depth.png');
+  }
+
+  .solar {
+    background-image: url('../assets/icon/solar.png');
+  }
+}
+
+.padding-left {
+  padding-left: 10px;
+}
