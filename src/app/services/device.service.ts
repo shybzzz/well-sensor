@@ -5,15 +5,20 @@ import { DeviceStorageService } from './device-storage.service';
 import { SensorType } from '../definitions';
 
 const mockDevice: StorageDevice = {
-  id: 'Test',
+  id: 'Rostyk/P',
   ssid: '',
   ipAddress: '',
   mqttOptions: {
-    username: 'afpodcuo',
-    password: 'UwxwRLCN-sIX',
-    servers: [{ host: 'm15.cloudmqtt.com', port: 39557 /*19557 29557 39557*/ }]
+    username: 'gelphadi',
+    password: 'oYMgWJETz_0N',
+    servers: [
+      {
+        host: 'perfect-politician.cloudmqtt.com',
+        port: 443 /*19557 29557 39557*/
+      }
+    ]
   },
-  sensorType: SensorType.SENSOR_SIMULATED
+  sensorType: SensorType.SENSOR_ANALOG_TEST
 };
 const mockDevices: StorageDevice[] = [mockDevice];
 

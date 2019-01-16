@@ -5,13 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { WifiPasswordPage } from './wifi-password.page';
+import { NewMqttPage } from './new-mqtt.page';
 import { LoggerModule } from '../../components/logger/logger.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: WifiPasswordPage
+    component: NewMqttPage
   }
 ];
 
@@ -24,6 +24,6 @@ const routes: Routes = [
     LoggerModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [WifiPasswordPage]
+  declarations: [NewMqttPage]
 })
-export class WifiPasswordPageModule {}
+export class NewMqttPageModule {}

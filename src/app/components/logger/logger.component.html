@@ -1,0 +1,8 @@
+<ion-list>
+  <ion-item
+    *ngFor="let log of (loggerService.logs | isDefined)"
+    [color]="log.color"
+  >
+    {{ log?.message }}
+  </ion-item>
+</ion-list>

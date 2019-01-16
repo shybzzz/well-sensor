@@ -14,21 +14,9 @@ export class AddDevicePage implements OnInit, OnDestroy {
   error;
   success;
   destroy$ = new Subject();
-  constructor(
-    private platform: Platform,
-    private qr: QrService,
-    private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
-  ngOnInit() {
-    this.platform.ready().then(() => {
-      const qr = this.qr;
-      const destroy$ = this.destroy$;
-      qr.error$.pipe(takeUntil(destroy$)).subscribe(err => {
-        this.error = err;
-      });
-    });
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.destroy$.next();

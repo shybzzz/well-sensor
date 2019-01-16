@@ -18,13 +18,18 @@
     <ion-list-header> <ion-label> Devices </ion-label> </ion-list-header>
 
     <ion-item
-      *ngFor="let d of devices"
-      (click)="openDevicePage(d)"
+      *ngFor="let deviceInfo of devicesInfo"
+      (click)="openDevicePage(deviceInfo.device)"
       [routerDirection]="'root'"
       [routerLink]="['/device']"
     >
-      <ion-icon class="device" [ngClass]="d.sensorType | sensorType"></ion-icon>
-      <ion-label class="padding-left">{{ d.id }}</ion-label>
+      <ion-icon
+        class="device"
+        [ngClass]="deviceInfo.device.sensorType | sensorType"
+      ></ion-icon>
+      <ion-label class="padding-left">{{ deviceInfo.device.id }}</ion-label>
+      <ion-label class="padding-left">{{ deviceInfo.state }}</ion-label>
+      <ion-label class="padding-left">{{ deviceInfo.value }}</ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

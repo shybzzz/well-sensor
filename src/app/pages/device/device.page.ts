@@ -9,12 +9,12 @@ import { MqttService, IMqttMessage } from 'ngx-mqtt';
 import {
   TOPIC_DATA,
   TOPIC_SEPARATOR,
-  PAYLOAD_VALUE,
   PAYLOAD_VALUE_DATA,
   PAYLOAD_VALUE_MEDIAN,
   PAYLOAD_VALUE_MEAN,
   PAYLOAD_VALUE_EXP_SMOOTH
 } from '../../definitions';
+import { getMqttValue } from '../../helpers/mqtt';
 
 @Component({
   selector: 'app-device',
@@ -42,7 +42,7 @@ export class DevicePage implements OnInit, OnDestroy {
 
   ngOnInit() {}
 
-  ionViewWillEnter() {
+  ionViewDidEnter() {
     const mqtt = this.mqtt;
 
     const device = this.device;
@@ -53,7 +53,7 @@ export class DevicePage implements OnInit, OnDestroy {
       if (mqttOptions) {
         mqtt.connect(mqttOptions);
         this.observeTopic(TOPIC_DATA, m => {
-          const value = this.getMqttValue(m);
+          const value = getMqttValue(m);
           this.data = value && value[PAYLOAD_VALUE_DATA];
           this.median = value && value[PAYLOAD_VALUE_MEDIAN];
           this.mean = value && value[PAYLOAD_VALUE_MEAN];
@@ -93,15 +93,6 @@ export class DevicePage implements OnInit, OnDestroy {
     }
     loader.dismiss();
     return res;
-  }
-
-  private getMqttValue(m: IMqttMessage): {} {
-    try {
-      const payload = JSON.parse(m.payload.toString());
-      return payload && payload[PAYLOAD_VALUE];
-    } catch (err) {
-      return null;
-    }
   }
 
   private observeTopic(topic: string, h: (m: IMqttMessage) => void): void {

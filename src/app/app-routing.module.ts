@@ -4,7 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'new-mqtt',
     pathMatch: 'full'
   },
   {
@@ -31,6 +31,10 @@ const routes: Routes = [
   {
     path: 'device',
     loadChildren: './pages//device/device.module#DevicePageModule'
+  },
+  {
+    path: 'new-mqtt',
+    loadChildren: './pages/new-mqtt/new-mqtt.module#NewMqttPageModule'
   }
 ];
 

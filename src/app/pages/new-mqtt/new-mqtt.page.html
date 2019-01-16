@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>New MQTT Connection</ion-title>
+    <ion-buttons slot="start"> <ion-menu-button></ion-menu-button> </ion-buttons
+  ></ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <app-logger></app-logger>
+  <ion-list [formGroup]="formGroup">
+    <ion-list-header>
+      <ion-label> MQTT Credentials </ion-label>
+      <ion-button color="light" (click)="scanQr()">
+        <ion-icon name="qr-scanner"> </ion-icon>
+      </ion-button>
+    </ion-list-header>
+    <ion-item>
+      <ion-label position="floating"> Server </ion-label>
+      <ion-input type="text" [formControl]="server"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> Port </ion-label>
+      <ion-input type="number" [formControl]="port"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> WSS Port </ion-label>
+      <ion-input type="number" [formControl]="wssPort"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> User </ion-label>
+      <ion-input type="text" [formControl]="user"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> Password </ion-label>
+      <ion-input type="password" [formControl]="mqttPwd"></ion-input>
+    </ion-item>
+  </ion-list>
+  <ion-button [disabled]="!formGroup.valid" (click)="connectMqtt()"
+    ><ion-icon name="cloud"></ion-icon>
+    <ion-label padding>Connect</ion-label>
+  </ion-button>
+</ion-content>
