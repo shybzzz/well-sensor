@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
-import { MqttService, MqttConnectionState } from 'ngx-mqtt';
+import { MqttService, MqttConnectionState, IMqttMessage } from 'ngx-mqtt';
 import { ConfigMqtt } from '../model/config-mqtt';
-import { toMqttOptions } from '../helpers/mqtt';
-import { Subject } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { toMqttOptions, getDeviceDataTopic } from '../helpers/mqtt.helper';
+import { Observable, ReplaySubject } from 'rxjs';
+import { skip, filter } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MqttConnectionService {
-  state$ = new Subject<MqttConnectionState>();
+  state$ = new ReplaySubject<MqttConnectionState>(1);
+
+  connected$ = this.state$.pipe(
+    filter(state => state === MqttConnectionState.CONNECTED)
+  );
+
   constructor(
     private mqttService: MqttService,
     private storageService: StorageService
@@ -58,5 +63,9 @@ export class MqttConnectionService {
 
   public async getCashedConfig(): Promise<ConfigMqtt> {
     return await this.storageService.getConfigMqtt();
+  }
+
+  public observeDeviceData(deviceId: string): Observable<IMqttMessage> {
+    return this.mqttService.observe(getDeviceDataTopic(deviceId));
   }
 }

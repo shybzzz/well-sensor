@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
     icon: 'cloud',
     color: undefined
   };
+
   appPages = [
     {
       title: 'Home',
@@ -27,14 +28,10 @@ export class AppComponent implements OnInit {
       icon: 'home',
       color: undefined
     },
-    {
-      title: 'Add Device',
-      url: '/scan-qr',
-      icon: 'qr-scanner',
-      color: undefined
-    },
     this.connectMqttPage
   ];
+
+  state: MqttConnectionState;
 
   constructor(
     private platform: Platform,
@@ -50,6 +47,7 @@ export class AppComponent implements OnInit {
     this.subscriptionService
       .takeUntilDestroyed(this.mqttConnectionService.state$)
       .subscribe(state => {
+        this.state = state;
         this.connectMqttPage.color =
           state === MqttConnectionState.CONNECTED ? 'success' : undefined;
       });

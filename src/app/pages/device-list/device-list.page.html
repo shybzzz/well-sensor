@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Devices</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <app-logger></app-logger>
+  <ion-list class="devices">
+    <ion-item
+      *ngFor="let deviceInfo of devicesInfo"
+      (click)="openDevicePage(deviceInfo.device)"
+      [routerDirection]="'root'"
+      [routerLink]="['/device']"
+    >
+      <ion-icon
+        class="device"
+        [ngClass]="deviceInfo.device.sensorType | sensorTypeIcon"
+      ></ion-icon>
+      <ion-label class="padding-left">{{ deviceInfo.device.id }}</ion-label>
+      <ion-label class="padding-left">{{ deviceInfo.value }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

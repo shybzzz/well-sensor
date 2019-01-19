@@ -14,7 +14,7 @@ import {
   PAYLOAD_VALUE_MEAN,
   PAYLOAD_VALUE_EXP_SMOOTH
 } from '../../definitions';
-import { getMqttValue } from '../../helpers/mqtt';
+import { getMqttValue } from '../../helpers/mqtt.helper';
 
 @Component({
   selector: 'app-device',

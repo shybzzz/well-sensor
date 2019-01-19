@@ -2,9 +2,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { SensorType } from '../../definitions';
 
 @Pipe({
-  name: 'sensorType'
+  name: 'sensorTypeIcon'
 })
-export class SensorTypePipe implements PipeTransform {
+export class SensorTypeIconPipe implements PipeTransform {
   transform(sensorType: SensorType): any {
     return sensorType === SensorType.SENSOR_ANALOG_TEST
       ? 'potentiometer'

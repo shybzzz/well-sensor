@@ -8,28 +8,5 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-list class="devices">
-    <ion-item *ngIf="success" color="secondary">
-      {{ success | json }}
-    </ion-item>
-    <ion-item *ngIf="error" color="danger">
-      Oops... {{ error.message | json }}
-    </ion-item>
-    <ion-list-header> <ion-label> Devices </ion-label> </ion-list-header>
-
-    <ion-item
-      *ngFor="let deviceInfo of devicesInfo"
-      (click)="openDevicePage(deviceInfo.device)"
-      [routerDirection]="'root'"
-      [routerLink]="['/device']"
-    >
-      <ion-icon
-        class="device"
-        [ngClass]="deviceInfo.device.sensorType | sensorType"
-      ></ion-icon>
-      <ion-label class="padding-left">{{ deviceInfo.device.id }}</ion-label>
-      <ion-label class="padding-left">{{ deviceInfo.state }}</ion-label>
-      <ion-label class="padding-left">{{ deviceInfo.value }}</ion-label>
-    </ion-item>
-  </ion-list>
+  
 </ion-content>

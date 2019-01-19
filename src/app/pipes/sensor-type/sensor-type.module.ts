@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SensorTypePipe } from './sensor-type.pipe';
+import { SensorTypeIconPipe } from './sensor-type-icon.pipe';
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [SensorTypePipe],
-  exports: [SensorTypePipe]
+  declarations: [SensorTypeIconPipe],
+  exports: [SensorTypeIconPipe]
 })
 export class SensorTypeModule {}
