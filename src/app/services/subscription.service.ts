@@ -8,7 +8,7 @@ export class SubscriptionService implements OnDestroy {
 
   constructor() {}
 
-  takeUndilDestroyed<T>(obs: Observable<T>): Observable<T> {
+  takeUntilDestroyed<T>(obs: Observable<T>): Observable<T> {
     return obs.pipe(takeUntil(this.destroyed$));
   }
 

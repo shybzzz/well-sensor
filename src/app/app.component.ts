@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.subscriptionService
-      .takeUndilDestroyed(this.mqttConnectionService.state$)
+      .takeUntilDestroyed(this.mqttConnectionService.state$)
       .subscribe(state => {
         this.connectMqttPage.color =
           state === MqttConnectionState.CONNECTED ? 'success' : undefined;
@@ -57,8 +57,15 @@ export class AppComponent implements OnInit {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+      this.mqttConnectionService
+        .connectCashed()
+        .then(() => this.hideLoading())
+        .catch(() => this.hideLoading);
     });
+  }
+
+  private hideLoading() {
+    this.statusBar.styleDefault();
+    this.splashScreen.hide();
   }
 }

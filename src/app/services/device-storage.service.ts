@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Storage } from '@ionic/storage';
 import { StorageDevice } from '../model/storage-device';
 import { deviceList } from '../helpers/device-storage';
-import { LoggerService } from './logger.service';
 import { Subject } from 'rxjs';
 
 @Injectable({

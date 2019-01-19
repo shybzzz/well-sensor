@@ -44,16 +44,17 @@ export class NewMqttPage implements OnInit {
   ngOnInit() {
     const subscriptionService = this.subscriptionService;
     const qrService = this.qrService;
-    subscriptionService.takeUndilDestroyed(qrService.data$).subscribe(d => {
+    subscriptionService.takeUntilDestroyed(qrService.data$).subscribe(d => {
       this.formGroup.patchValue(d);
     });
+
     const loggerService = this.loggerService;
-    subscriptionService.takeUndilDestroyed(qrService.error$).subscribe(err => {
+    subscriptionService.takeUntilDestroyed(qrService.error$).subscribe(err => {
       loggerService.error(err);
     });
 
     subscriptionService
-      .takeUndilDestroyed(this.mqttConnectionService.state$)
+      .takeUntilDestroyed(this.mqttConnectionService.state$)
       .subscribe(state => {
         this.state = state;
         if (state === MqttConnectionState.CONNECTED) {
@@ -64,6 +65,10 @@ export class NewMqttPage implements OnInit {
           loggerService.error('MQTT is not connected');
         }
       });
+
+    this.mqttConnectionService.getCashedConfig().then(config => {
+      this.formGroup.patchValue(config);
+    });
   }
 
   scanQr() {
@@ -77,7 +82,11 @@ export class NewMqttPage implements OnInit {
       message: 'Sending Config....'
     });
     await loader.present();
-    await this.mqttConnectionService.connect(this.formGroup.value);
+    try {
+      await this.mqttConnectionService.connect(this.formGroup.value);
+    } catch (err) {
+      this.loggerService.error(err);
+    }
     loader.dismiss();
   }
 }

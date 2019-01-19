@@ -4,13 +4,17 @@ import { ConfigMqtt } from '../model/config-mqtt';
 import { toMqttOptions } from '../helpers/mqtt';
 import { Subject } from 'rxjs';
 import { skip } from 'rxjs/operators';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MqttConnectionService {
   state$ = new Subject<MqttConnectionState>();
-  constructor(private mqttService: MqttService) {}
+  constructor(
+    private mqttService: MqttService,
+    private storageService: StorageService
+  ) {}
 
   async connect(configMqtt: ConfigMqtt): Promise<any> {
     const mqttService = this.mqttService;
@@ -25,16 +29,34 @@ export class MqttConnectionService {
         connected = state === MqttConnectionState.CONNECTED;
         if (connected) {
           subscription.unsubscribe();
-          resolve();
+          this.storageService.saveConfigMqtt(configMqtt).then(() => {
+            resolve();
+          });
         }
       });
 
       setTimeout(() => {
         if (!connected) {
+          subscription.unsubscribe();
           reject('Connection Timeout');
         }
       }, 5000);
       mqttService.connect(toMqttOptions(configMqtt));
     });
+  }
+
+  async connectCashed(): Promise<any> {
+    let res: Promise<any>;
+    try {
+      await this.connect(await this.getCashedConfig());
+      res = Promise.resolve();
+    } catch (err) {
+      res = Promise.reject(err);
+    }
+    return res;
+  }
+
+  public async getCashedConfig(): Promise<ConfigMqtt> {
+    return await this.storageService.getConfigMqtt();
   }
 }
