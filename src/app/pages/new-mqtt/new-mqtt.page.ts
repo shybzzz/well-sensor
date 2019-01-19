@@ -1,12 +1,12 @@
 import { LoadingController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { MqttService, MqttConnectionState } from 'ngx-mqtt';
+import { MqttConnectionState } from 'ngx-mqtt';
 import { Router } from '@angular/router';
 import { QrService } from '../../services/qr.service';
 import { SubscriptionService } from '../../services/subscription.service';
 import { LoggerService } from '../../services/logger.service';
-import { toMqttOptions } from '../../helpers/mqtt';
+import { MqttConnectionService } from '../../services/mqtt-connection.service';
 
 @Component({
   selector: 'app-new-mqtt',
@@ -16,8 +16,8 @@ import { toMqttOptions } from '../../helpers/mqtt';
 })
 export class NewMqttPage implements OnInit {
   server = new FormControl('', [Validators.required]);
-  port = new FormControl('', [Validators.required]);
-  wssPort = new FormControl('', [Validators.required]);
+  port = new FormControl(null, [Validators.required]);
+  wssPort = new FormControl(null, [Validators.required]);
   user = new FormControl('', [Validators.required]);
   mqttPwd = new FormControl('', [Validators.required]);
 
@@ -33,7 +33,7 @@ export class NewMqttPage implements OnInit {
 
   constructor(
     private formBuider: FormBuilder,
-    private mqttService: MqttService,
+    private mqttConnectionService: MqttConnectionService,
     private router: Router,
     private qrService: QrService,
     private subscriptionService: SubscriptionService,
@@ -44,20 +44,18 @@ export class NewMqttPage implements OnInit {
   ngOnInit() {
     const subscriptionService = this.subscriptionService;
     const qrService = this.qrService;
-    subscriptionService
-      .takeUndilDestroyed(qrService.data$)
-      .subscribe(d => {
-        this.formGroup.patchValue(d);
-      });
-      subscriptionService.takeUndilDestroyed(qrService.error$).subscribe(err => {
-        this.loggerService.error(err);
-      })
+    subscriptionService.takeUndilDestroyed(qrService.data$).subscribe(d => {
+      this.formGroup.patchValue(d);
+    });
+    const loggerService = this.loggerService;
+    subscriptionService.takeUndilDestroyed(qrService.error$).subscribe(err => {
+      loggerService.error(err);
+    });
 
     subscriptionService
-      .takeUndilDestroyed(this.mqttService.state)
+      .takeUndilDestroyed(this.mqttConnectionService.state$)
       .subscribe(state => {
         this.state = state;
-        const loggerService = this.loggerService;
         if (state === MqttConnectionState.CONNECTED) {
           loggerService.log('MQTT is connected');
         } else if (state === MqttConnectionState.CONNECTING) {
@@ -79,11 +77,7 @@ export class NewMqttPage implements OnInit {
       message: 'Sending Config....'
     });
     await loader.present();
-    const mqttService = this.mqttService;
-    if (this.state === MqttConnectionState.CONNECTED) {
-      mqttService.disconnect();
-    }
-    mqttService.connect(toMqttOptions(this.formGroup.value));
+    await this.mqttConnectionService.connect(this.formGroup.value);
     loader.dismiss();
   }
 }
