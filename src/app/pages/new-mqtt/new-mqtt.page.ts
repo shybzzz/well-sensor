@@ -41,7 +41,9 @@ export class NewMqttPage implements OnInit {
     private loadingCtrl: LoadingController
   ) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ionViewDidEnter() {
     const subscriptionService = this.subscriptionService;
     const qrService = this.qrService;
     subscriptionService.takeUntilDestroyed(qrService.data$).subscribe(d => {
@@ -87,6 +89,6 @@ export class NewMqttPage implements OnInit {
     } catch (err) {
       this.loggerService.error(err);
     }
-    loader.dismiss();
+    await loader.dismiss();
   }
 }

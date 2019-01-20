@@ -20,7 +20,9 @@ export class HomePage implements OnInit {
     private subscriptionService: SubscriptionService
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  ionViewDidEnter() {
     this.subscriptionService
       .takeUntilDestroyed(this.mqttConnectionService.state$)
       .subscribe(state =>
@@ -29,6 +31,4 @@ export class HomePage implements OnInit {
         ])
       );
   }
-
-  ionViewDidEnter() {}
 }
