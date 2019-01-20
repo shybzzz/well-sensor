@@ -2,27 +2,27 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { SensorType } from '../../definitions';
 
 @Pipe({
-  name: 'sensorTypeIcon'
+  name: 'sensorTypeUnit'
 })
-export class SensorTypeIconPipe implements PipeTransform {
-  transform(sensorType: SensorType): any {
+export class SensorTypeUnitPipe implements PipeTransform {
+  transform(value: any, sensorType: SensorType): string {
     let res: string;
     switch (sensorType) {
       case SensorType.SENSOR_ANALOG_TEST:
-        res = 'potentiometer';
+        res = `${value} arb. units`;
         break;
       case SensorType.SENSOR_DS18B20:
-        res = 'temperature';
+        res = `${Math.round(value / 10) / 10} \xB0C`;
         break;
       case SensorType.SENSOR_GUT800:
-        res = 'depth';
+        res = `${value} m.`;
         break;
       case SensorType.SENSOR_INA250A2PW:
-        res = 'solar';
+        res = `${value} mA`;
         break;
       default:
-        res = 'simulated';
+        res = `${value} arb. units`;
     }
-    return res;
+    return value && res;
   }
 }

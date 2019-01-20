@@ -6,7 +6,6 @@
 </ion-header>
 
 <ion-content padding>
-  <app-logger></app-logger>
   <ion-list [formGroup]="formGroup">
     <ion-list-header>
       <ion-label> MQTT Credentials </ion-label>
@@ -35,8 +34,13 @@
       <ion-input type="password" [formControl]="mqttPwd"></ion-input>
     </ion-item>
   </ion-list>
-  <ion-button [disabled]="!formGroup.valid" (click)="connectMqtt()"
+  <ion-button
+    [disabled]="!formGroup.valid"
+    (click)="connectMqtt()"
+    [shape]="'round'"
+    padding
     ><ion-icon name="cloud"></ion-icon>
     <ion-label padding>Connect</ion-label>
   </ion-button>
+  <app-logger></app-logger>
 </ion-content>

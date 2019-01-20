@@ -8,10 +8,14 @@
 </ion-header>
 
 <ion-content padding>
-  <app-logger></app-logger>
-  <ion-list class="devices">
+  <ion-button [shape]="'round'">Add New</ion-button>
+  <ion-button [shape]="'round'">Connect Existing</ion-button
+  ><ion-list class="devices">
+    <ion-list-header>
+      <ion-label>Connected Devices ({{ devicesInfo?.length }})</ion-label>
+    </ion-list-header>
     <ion-item
-      *ngFor="let deviceInfo of devicesInfo"
+      *ngFor="let deviceInfo of devicesInfo; let i = index"
       (click)="openDevicePage(deviceInfo.device)"
       [routerDirection]="'root'"
       [routerLink]="['/device']"
@@ -21,7 +25,10 @@
         [ngClass]="deviceInfo.device.sensorType | sensorTypeIcon"
       ></ion-icon>
       <ion-label class="padding-left">{{ deviceInfo.device.id }}</ion-label>
-      <ion-label class="padding-left">{{ deviceInfo.value }}</ion-label>
+      <ion-label class="padding-left">{{
+        deviceInfo.value | sensorTypeUnit: deviceInfo.device.sensorType
+      }}</ion-label>
     </ion-item>
   </ion-list>
+  <app-logger></app-logger>
 </ion-content>
