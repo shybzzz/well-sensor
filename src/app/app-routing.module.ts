@@ -39,7 +39,9 @@ const routes: Routes = [
   {
     path: 'device-list',
     loadChildren: './pages/device-list/device-list.module#DeviceListPageModule'
-  }
+  },  { path: 'new-device', loadChildren: './pages/new-device/new-device.module#NewDevicePageModule' },
+  { path: 'existing-device', loadChildren: './pages/existing-device/existing-device.module#ExistingDevicePageModule' }
+
 ];
 
 @NgModule({

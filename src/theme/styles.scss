@@ -1,26 +1,32 @@
 .devices {
+  $sine: url('../assets/icon/sine.png');
+  $potentiometer: url('../assets/icon/potentiometer.png');
+  $temperature: url('../assets/icon/temperature.png');
+  $depth: url('../assets/icon/depth.png');
+  $solar: url('../assets/icon/solar.png');
+
   .device {
     background-repeat: no-repeat;
     background-size: contain;
-  }
-  .simulated {
-    background-image: url('../assets/icon/sine.png');
-  }
+    &.simulated {
+      background-image: $sine;
+    }
 
-  .potentiometer {
-    background-image: url('../assets/icon/potentiometer.png');
-  }
+    &.potentiometer {
+      background-image: $potentiometer;
+    }
 
-  .temperature {
-    background-image: url('../assets/icon/temperature.png');
-  }
+    &.temperature {
+      background-image: $temperature;
+    }
 
-  .depth {
-    background-image: url('../assets/icon/depth.png');
-  }
+    &.depth {
+      background-image: $depth;
+    }
 
-  .solar {
-    background-image: url('../assets/icon/solar.png');
+    &.solar {
+      background-image: $solar;
+    }
   }
 }
 

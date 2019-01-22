@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>New Device</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="location.back()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list [formGroup]="formGroup">
+    <ion-list-header class="devices">
+      <ion-icon
+        class="device"
+        [ngClass]="sensorType.value | sensorTypeIcon"
+      ></ion-icon>
+      <ion-label class="padding-left"> Device Configuration </ion-label>
+      <ion-button color="light" (click)="scanQr()">
+        <ion-icon name="qr-scanner"> </ion-icon>
+      </ion-button>
+    </ion-list-header>
+    <ion-item>
+      <ion-label position="floating"> Device ID </ion-label>
+      <ion-input type="text" [formControl]="deviceId"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> Sensor Type </ion-label>
+      <ion-select class="devices" [formControl]="sensorType">
+        <ion-select-option [value]="0" class="simulated device"
+          >Simulation</ion-select-option
+        >
+        <ion-select-option [value]="1">Potentiometer</ion-select-option>
+        <ion-select-option [value]="2"
+          >Temperature Sensor DS18B20</ion-select-option
+        >
+        <ion-select-option [value]="3">Depth Sensor GUT800</ion-select-option>
+        <ion-select-option [value]="4"
+          >Current Sensor INA250A2PW</ion-select-option
+        >
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> Access Point </ion-label>
+      <ion-select ([ngModel])="(accessPointSsid)" [formControl]="apSSID">
+        <ion-select-option
+          *ngFor="let network of accessPointNetworks"
+          value="network.SSID"
+          >{{ network.SSID }}</ion-select-option
+        >
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> Device IP Address </ion-label>
+      <ion-input type="text" [formControl]="apIP"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> Access Point Password </ion-label>
+      <ion-input type="password" [formControl]="appPwd"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> WiFi Network </ion-label>
+      <ion-select ([ngModel])="(selectedSsid)" [formControl]="ssid">
+        <ion-select-option
+          *ngFor="let network of accessPointNetworks"
+          value="network.SSID"
+          >{{ network.SSID }}</ion-select-option
+        >
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating"> WiFi Password </ion-label>
+      <ion-input type="password" [formControl]="wifiPwd"></ion-input>
+    </ion-item>
+  </ion-list>
+  <ion-button
+    [disabled]="!formGroup.valid"
+    (click)="connectDevice()"
+    [shape]="'round'"
+    padding
+    ><ion-icon name="cloud"></ion-icon>
+    <ion-label padding>Connect</ion-label>
+  </ion-button>
+  <app-logger></app-logger
+></ion-content>
